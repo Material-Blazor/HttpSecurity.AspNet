@@ -5,25 +5,17 @@ namespace HttpSecurity.AspNetCore;
 
 
 /// <summary>
-/// Compressed static files middleware.
+/// Http security middleware.
 /// </summary>
-public class ContentSecurityPolicyMiddleware
+public class HttpSecurityMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IOptions<ContentSecurityPolicyOptions> _options;
+    private readonly IOptions<HttpSecurityOptions> _options;
 
 
-    public ContentSecurityPolicyMiddleware(
-        RequestDelegate next,
-        IOptions<ContentSecurityPolicyOptions> options)
+    public HttpSecurityMiddleware(RequestDelegate next, IOptions<HttpSecurityOptions> options)
     {
-        if (next == null)
-        {
-            throw new ArgumentNullException(nameof(next));
-        }
-
-        _next = next;
-
+        _next = next ?? throw new ArgumentNullException(nameof(next));
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
@@ -34,13 +26,11 @@ public class ContentSecurityPolicyMiddleware
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    public async Task Invoke(HttpContext context, ContentSecurityPolicyService service)
+    public async Task Invoke(HttpContext context, HttpSecurityService service)
     {
         var baseUri = context.Request.Host.ToUriComponent();
         var baseDomain = context.Request.Host.Host;
         
-        context.Response.Headers.Add("X-Frame-Options", "DENY");
-        context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
         context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
         context.Response.Headers.Add("X-ClientId", "dioptra");
         context.Response.Headers.Add("Referrer-Policy", "no-referrer");
@@ -48,7 +38,10 @@ public class ContentSecurityPolicyMiddleware
         context.Response.Headers.Add("Permissions-Policy", "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()");
         context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 
-        context.Response.Headers.Add("Content-Security-Policy", service.GetContentSecurityPolicy(baseUri, baseDomain));
+        foreach (var header in service.GetSecurityHeaders(baseUri, baseDomain))
+        {
+            context.Response.Headers.Add(header.Key, header.Value);
+        }
 
         await _next(context);
     }

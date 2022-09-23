@@ -13,6 +13,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddContentSecurityPolicy(options => 
 {
     options
+        // Content Security Policies
         .AddBaseUriCSP(o => o.AddSelf())
         .AddBlockAllMixedContentCSP()
         .AddChildSrcCSP(o => o.AddSelf())
@@ -31,7 +32,11 @@ builder.Services.AddContentSecurityPolicy(options =>
         .AddScriptSrcCSP(o => o.AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddStrictDynamic().AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js"))
         .AddStyleSrcCSP(o => o.AddSelf().AddUnsafeInline().AddReportSample().AddUri("p.typekit.net").AddUri("use.typekit.net").AddUri("fonts.googleapis.com").AddUri("fonts.gstatic.com"))
         .AddUpgradeInsecureRequestsCSP()
-        .AddWorkerSrcCSP(o => o.AddSelf());
+        .AddWorkerSrcCSP(o => o.AddSelf())
+
+        // Other headers
+        .AddXFrameOptionsDirective(XFrameOptionsDirectives.Deny)
+        .AddXContentTypeOptionsNoSniff();
 });
 
 var app = builder.Build();

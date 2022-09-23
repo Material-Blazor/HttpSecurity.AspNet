@@ -8,7 +8,7 @@ namespace HttpSecurity.AspNetCore;
 /// <summary>
 /// Static extensions.
 /// </summary>
-public static class CompressedStaticFileExtensions
+public static class HttpSecurityExtensions
 {
     /// <summary>
     /// Adds the compressed and image alternative file provider services as singletons.
@@ -22,7 +22,7 @@ public static class CompressedStaticFileExtensions
             throw new ArgumentNullException(nameof(serviceCollection));
         }
 
-        return serviceCollection.AddScoped<ContentSecurityPolicyService>();
+        return serviceCollection.AddScoped<HttpSecurityService>();
     }
 
 
@@ -32,7 +32,7 @@ public static class CompressedStaticFileExtensions
     /// <param name="services"></param>
     /// <param name="configureOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddContentSecurityPolicy(this IServiceCollection serviceCollection, Action<ContentSecurityPolicyOptions> configureOptions)
+    public static IServiceCollection AddContentSecurityPolicy(this IServiceCollection serviceCollection, Action<HttpSecurityOptions> configureOptions)
     {
         if (serviceCollection == null)
         {
@@ -44,11 +44,11 @@ public static class CompressedStaticFileExtensions
             throw new ArgumentNullException(nameof(configureOptions));
         }
 
-        ContentSecurityPolicyOptions options = new();
+        HttpSecurityOptions options = new();
 
         configureOptions.Invoke(options);
 
-        return serviceCollection.AddScoped(serviceProvider => new ContentSecurityPolicyService(options));
+        return serviceCollection.AddScoped(serviceProvider => new HttpSecurityService(options));
     }
 
 
@@ -65,7 +65,7 @@ public static class CompressedStaticFileExtensions
             throw new ArgumentNullException(nameof(app));
         }
 
-        return app.UseMiddleware<ContentSecurityPolicyMiddleware>();
+        return app.UseMiddleware<HttpSecurityMiddleware>();
     }
 
 
@@ -76,13 +76,13 @@ public static class CompressedStaticFileExtensions
     /// <param name="options"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IApplicationBuilder UseContentSecurityPolicy(this IApplicationBuilder app, ContentSecurityPolicyOptions options)
+    public static IApplicationBuilder UseContentSecurityPolicy(this IApplicationBuilder app, HttpSecurityOptions options)
     {
         if (app == null)
         {
             throw new ArgumentNullException(nameof(app));
         }
 
-        return app.UseMiddleware<ContentSecurityPolicyMiddleware>(Options.Create(options));
+        return app.UseMiddleware<HttpSecurityMiddleware>(Options.Create(options));
     }
 }
