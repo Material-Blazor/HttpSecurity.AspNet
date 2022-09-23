@@ -35,8 +35,13 @@ builder.Services.AddContentSecurityPolicy(options =>
         .AddWorkerSrcCSP(o => o.AddSelf())
 
         // Other headers
-        .AddXFrameOptionsDirective(XFrameOptionsDirectives.Deny)
-        .AddXContentTypeOptionsNoSniff();
+        .AddXClientId("Material.Blazor")
+        .AddXContentTypeOptionsNoSniff()
+        .AddXFrameOptionsDirective(XFrameOptionsDirective.Deny)
+        .AddXXssProtectionDirective(XXssProtectionDirective.OneModeBlock)
+        .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None)
+        
+        ;
 });
 
 var app = builder.Build();

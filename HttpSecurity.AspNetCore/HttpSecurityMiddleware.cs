@@ -31,10 +31,7 @@ public class HttpSecurityMiddleware
         var baseUri = context.Request.Host.ToUriComponent();
         var baseDomain = context.Request.Host.Host;
         
-        context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
-        context.Response.Headers.Add("X-ClientId", "dioptra");
         context.Response.Headers.Add("Referrer-Policy", "no-referrer");
-        context.Response.Headers.Add("X-Permitted-Cross-Domain-Policies", "none");
         context.Response.Headers.Add("Permissions-Policy", "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()");
         context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 

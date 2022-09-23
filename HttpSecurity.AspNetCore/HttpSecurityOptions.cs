@@ -15,13 +15,37 @@ public sealed partial class HttpSecurityOptions
     /// <summary>
     /// The requested directive.
     /// </summary>
-    internal XFrameOptionsDirectives? XFrameOptionsDirective { get; private set; } = null;
+    internal string XClientId { get; private set; } = string.Empty;
 
 
     /// <summary>
     /// The requested directive.
     /// </summary>
     internal bool XContentTypeOptionsNoSniff { get; private set; } = false;
+
+
+    /// <summary>
+    /// The requested X-Frame-Options directive.
+    /// </summary>
+    internal XFrameOptionsDirective? XFrameOptionsDirective { get; private set; } = null;
+
+
+    /// <summary>
+    /// The requested XPermittedCrossDomainPoliciesDirective directive.
+    /// </summary>
+    internal XPermittedCrossDomainPoliciesDirective? XPermittedCrossDomainPoliciesDirective { get; private set; } = null;
+
+
+    /// <summary>
+    /// The requested X-XSS-Protection directive.
+    /// </summary>
+    internal XXssProtectionDirective? XXssProtectionDirective { get; private set; } = null;
+
+
+    /// <summary>
+    /// The requested X-XSS-Protection directive.
+    /// </summary>
+    internal string XXssProtectionReportingUri { get; private set; } = string.Empty;
 
 
     /// <summary>
@@ -35,6 +59,17 @@ public sealed partial class HttpSecurityOptions
         }
 
         return PolicyString;
+    }
+
+
+    /// <summary>
+    /// Adds an X-Client-Id directive with the value supplied.
+    /// </summary>
+    /// <returns></returns>
+    public HttpSecurityOptions AddXClientId(string clientId)
+    {
+        XClientId = clientId;
+        return this;
     }
 
 
@@ -54,9 +89,35 @@ public sealed partial class HttpSecurityOptions
     /// </summary>
     /// <param name="xFrameOptionsDirective"></param>
     /// <returns></returns>
-    public HttpSecurityOptions AddXFrameOptionsDirective(XFrameOptionsDirectives xFrameOptionsDirective)
+    public HttpSecurityOptions AddXFrameOptionsDirective(XFrameOptionsDirective xFrameOptionsDirective)
     {
         XFrameOptionsDirective = xFrameOptionsDirective;
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds an xPermittedCrossDomainPoliciesDirective directive.
+    /// </summary>
+    /// <param name="xFrameOptionsDirective"></param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective xPermittedCrossDomainPoliciesDirective)
+    {
+        XPermittedCrossDomainPoliciesDirective = xPermittedCrossDomainPoliciesDirective;
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds an X-XSS-Protection directive.
+    /// </summary>
+    /// <param name="xXssProtectionDirective"></param>
+    /// <param name="reportingUri">Ignored without <see cref="XXssProtectionDirective.OneReportWithUri"/></param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddXXssProtectionDirective(XXssProtectionDirective xXssProtectionDirective, string reportingUri = "")
+    {
+        XXssProtectionDirective = xXssProtectionDirective;
+        XXssProtectionReportingUri = reportingUri;
         return this;
     }
 }

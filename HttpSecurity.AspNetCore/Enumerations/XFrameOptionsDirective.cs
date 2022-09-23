@@ -3,7 +3,7 @@
 /// <summary>
 /// X-Frame-Options directives.
 /// </summary>
-public enum XFrameOptionsDirectives
+public enum XFrameOptionsDirective
 {
     /// <summary>
     /// DENY
