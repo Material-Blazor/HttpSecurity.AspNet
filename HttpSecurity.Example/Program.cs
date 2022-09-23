@@ -12,7 +12,11 @@ builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddContentSecurityPolicy(options => 
 {
-    options.AddBaseUriPolicy(o => o.AddNone());
+    options
+    .AddBaseUriPolicy(o => o.AddSelf())
+    .AddBlockAllMixedContentPolicy()
+    .AddChildSrcPolicy(o => o.AddSelf())
+    .AddConnectSrcPolicy(o => o.AddSelf().AddUri("www.google-analytics.com").AddUri("region1.google-analytics.com"));
 });
 
 var app = builder.Build();

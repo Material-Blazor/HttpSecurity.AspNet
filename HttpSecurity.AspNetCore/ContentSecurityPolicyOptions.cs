@@ -19,7 +19,7 @@ public sealed partial class ContentSecurityPolicyOptions
     {
         if (string.IsNullOrWhiteSpace(PolicyString))
         {
-            PolicyString = string.Join(' ', Policies.OrderBy(x => x).Select(x => x.GetPolicyValue()));
+            PolicyString = string.Join(' ', Policies.Select(x => x.GetPolicyValue()).OrderBy(x => x));
         }
 
         return PolicyString;

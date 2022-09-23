@@ -139,6 +139,22 @@ internal class SourceGenerator : ISourceGenerator
             sb.AppendLinesIndented(1, "/// </summary>");
             sb.AppendLinesIndented(1, "/// <param name=\"configureOptions\">Configures policy options</param>");
             sb.AppendLinesIndented(1, "/// <returns></returns>");
+            sb.AppendLinesIndented(1, $"public ContentSecurityPolicyOptions Add{policyClassTypeName}()");
+            sb.AppendLinesIndented(1, "{");
+            sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
+            sb.AppendLinesIndented(2, "");
+            sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(\"nonce\"));");
+            sb.AppendLinesIndented(2, "");
+            sb.AppendLinesIndented(2, "return this;");
+            sb.AppendLinesIndented(1, "}");
+
+            sb.AppendLinesIndented(1, "");
+            sb.AppendLinesIndented(1, "");
+            sb.AppendLinesIndented(1, "/// <summary>");
+            sb.AppendLinesIndented(1, $"/// Adds a {cspPolicyName} policy.");
+            sb.AppendLinesIndented(1, "/// </summary>");
+            sb.AppendLinesIndented(1, "/// <param name=\"configureOptions\">Configures policy options</param>");
+            sb.AppendLinesIndented(1, "/// <returns></returns>");
             sb.AppendLinesIndented(1, $"public ContentSecurityPolicyOptions Add{policyClassTypeName}(Action<{policyClassTypeName}Options> configureOptions)");
             sb.AppendLinesIndented(1, "{");
             sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
@@ -175,6 +191,13 @@ internal class SourceGenerator : ISourceGenerator
 
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)}(string nonceValue)");
+        sb.AppendLinesIndented(1, "{");
+        sb.AppendLinesIndented(2, "Options = new(nonceValue);");
+        sb.AppendLinesIndented(1, "}");
+
+        sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)}(string nonceValue, Action<{GetClassTypeName(classSymbol)}Options> configureOptions)");
         sb.AppendLinesIndented(1, "{");
         sb.AppendLinesIndented(2, "Options = new(nonceValue);");
@@ -186,7 +209,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <inheritdoc />");
         sb.AppendLinesIndented(1, $"public override string GetPolicyValue()");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "return Options.PolicyValues.Any() ? $\"{PolicyName} {string.Join(' ', Options.PolicyValues)};\" : $\"{PolicyName}\";");
+        sb.AppendLinesIndented(2, "return Options.PolicyValues.Any() ? $\"{PolicyName} {string.Join(' ', Options.PolicyValues)};\" : $\"{PolicyName};\";");
         sb.AppendLinesIndented(1, "}");
 
         return true;

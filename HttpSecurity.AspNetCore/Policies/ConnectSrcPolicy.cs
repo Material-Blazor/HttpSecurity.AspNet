@@ -16,6 +16,7 @@
 [AddUnsafeEval]
 [AddUnsafeHashes]
 [AddUnsafeInline]
+[AddUri]
 public sealed partial class ConnectSrcPolicyOptions : PolicyOptionsBase
 {
 }
