@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.32916.344
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpSecurity.AspNetCore", "HttpSecurity.AspNetCore\HttpSecurity.AspNetCore.csproj", "{9513CFDB-E384-43FF-9EEC-821A8D30ACF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGenerator", "SourceGenerator\SourceGenerator.csproj", "{9CE8D3BE-32F7-4709-91D1-62FB8D72EBB6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9513CFDB-E384-43FF-9EEC-821A8D30ACF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9513CFDB-E384-43FF-9EEC-821A8D30ACF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9513CFDB-E384-43FF-9EEC-821A8D30ACF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9513CFDB-E384-43FF-9EEC-821A8D30ACF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CE8D3BE-32F7-4709-91D1-62FB8D72EBB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE8D3BE-32F7-4709-91D1-62FB8D72EBB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CE8D3BE-32F7-4709-91D1-62FB8D72EBB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CE8D3BE-32F7-4709-91D1-62FB8D72EBB6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {65E6D492-ADAA-4436-A42A-9A181C966354}
+	EndGlobalSection
+EndGlobal
