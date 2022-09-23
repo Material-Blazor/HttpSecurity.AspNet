@@ -6,7 +6,7 @@
 /// </summary>
 public sealed partial class ContentSecurityPolicyOptions
 {
-    private List<PolicyBase> Policies { get; set; } = new();
+    private List<ContentSecurityPolicyBase> Policies { get; set; } = new();
 
 
     private string PolicyString { get; set; } = string.Empty;
@@ -15,11 +15,11 @@ public sealed partial class ContentSecurityPolicyOptions
     /// <summary>
     /// Returns the content security policy string.
     /// </summary>
-    internal string GetContentSecurityPolicy()
+    internal string GetContentSecurityPolicy(string baseUri, string baseDomain)
     {
         if (string.IsNullOrWhiteSpace(PolicyString))
         {
-            PolicyString = string.Join(' ', Policies.Select(x => x.GetPolicyValue()).OrderBy(x => x));
+            PolicyString = string.Join(' ', Policies.Select(x => x.GetPolicyValue(baseUri, baseDomain)).OrderBy(x => x));
         }
 
         return PolicyString;

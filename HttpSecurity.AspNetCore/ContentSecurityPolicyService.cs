@@ -21,8 +21,8 @@ public class ContentSecurityPolicyService
     /// <summary>
     /// Returns the content security policy string.
     /// </summary>
-    public string GetContentSecurityPolicy()
+    public string GetContentSecurityPolicy(string baseUri, string baseDomain)
     {
-        return _options.GetContentSecurityPolicy();
+        return _options.GetContentSecurityPolicy(baseUri, baseDomain);
     }
 }

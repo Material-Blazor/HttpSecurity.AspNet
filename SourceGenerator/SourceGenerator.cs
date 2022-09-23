@@ -127,7 +127,7 @@ internal class SourceGenerator : ISourceGenerator
 
         foreach (var policyClassSymbol in policyClassSymbols.OrderBy(x => x.Name))
         {
-            var attribute = policyClassSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"PolicyAttribute").FirstOrDefault();
+            var attribute = policyClassSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyAttribute").FirstOrDefault();
             var cspPolicyName = attribute.ConstructorArguments.FirstOrDefault().Value;
             var policyClassTypeName = GetClassTypeName(policyClassSymbol);
             var hasAddAttributes = policyOptionClassSymbols[policyClassTypeName].GetAttributes().Where(ad => ad.AttributeClass.Name.Substring(0, 3) == $"Add").Any();
@@ -182,7 +182,7 @@ internal class SourceGenerator : ISourceGenerator
 
     private bool ProcessPolicyAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
     {
-        var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"PolicyAttribute").FirstOrDefault();
+        var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyAttribute").FirstOrDefault();
 
         if (attribute == default)
         {
@@ -216,9 +216,9 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "/// <inheritdoc />");
-        sb.AppendLinesIndented(1, $"public override string GetPolicyValue()");
+        sb.AppendLinesIndented(1, $"public override string GetPolicyValue(string baseUri, string baseDomain)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "return Options.PolicyValues.Any() ? $\"{PolicyName} {string.Join(' ', Options.PolicyValues)};\" : $\"{PolicyName};\";");
+        sb.AppendLinesIndented(2, "return Options.PolicyValueBuilders.Any() ? $\"{PolicyName} {string.Join(' ', Options.PolicyValueBuilders.Select(x => x.Invoke(baseUri, baseDomain)))};\" : $\"{PolicyName};\";");
         sb.AppendLinesIndented(1, "}");
 
         return true;
@@ -227,7 +227,7 @@ internal class SourceGenerator : ISourceGenerator
 
     private bool ProcessPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
     {
-        var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"PolicyOptionsAttribute").FirstOrDefault();
+        var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyOptionsAttribute").FirstOrDefault();
 
         if (attribute == default)
         {
@@ -248,7 +248,20 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"private {GetClassTypeName(classSymbol)} AddValue(string value)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "PolicyValues.Add(value);");
+        sb.AppendLinesIndented(2, "PolicyValueBuilders.Add((baseUri, baseDomain) => value);");
+        sb.AppendLinesIndented(2, "return this;");
+        sb.AppendLinesIndented(1, "}");
+
+        sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, "/// <summary>");
+        sb.AppendLinesIndented(1, "/// Adds a policy value.");
+        sb.AppendLinesIndented(1, "/// </summary>");
+        sb.AppendLinesIndented(1, "/// <param name=\"valueBuilder\">Builds the value to be added to the policy, supplying the baseUri and baseDomain parameters</param>");
+        sb.AppendLinesIndented(1, "/// <returns></returns>");
+        sb.AppendLinesIndented(1, $"private {GetClassTypeName(classSymbol)} AddValue(Func<string, string, string> valueBuilder)");
+        sb.AppendLinesIndented(1, "{");
+        sb.AppendLinesIndented(2, "PolicyValueBuilders.Add(valueBuilder);");
         sb.AppendLinesIndented(2, "return this;");
         sb.AppendLinesIndented(1, "}");
 
@@ -553,13 +566,12 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <summary>");
         sb.AppendLinesIndented(1, $"/// Adds a uri to the policy.");
         sb.AppendLinesIndented(1, "/// </summary>");
+        sb.AppendLinesIndented(1, "/// <param name=\"uri\">The uri to be added to the policy</param>");
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddUri(string uri)");
         sb.AppendLinesIndented(1, "{");
         sb.AppendLinesIndented(2, "return AddValue(uri);");
         sb.AppendLinesIndented(1, "}");
-
-
 
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "");
@@ -567,11 +579,39 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <summary>");
         sb.AppendLinesIndented(1, $"/// Conditionally adds a uri to the policy.");
         sb.AppendLinesIndented(1, "/// </summary>");
-        sb.AppendLinesIndented(1, $"/// <param name=\"conditionalFunc\">The conditional function delegate determining whether to add the nonce to the policy</param>");
+        sb.AppendLinesIndented(1, "/// <param name=\"uri\">The uri to be added to the policy</param>");
+        sb.AppendLinesIndented(1, "/// <param name=\"conditionalFunc\">The conditional function delegate determining whether to add the nonce to the policy</param>");
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddUriIf(string uri, Func<bool> conditionalFunc)");
         sb.AppendLinesIndented(1, "{");
         sb.AppendLinesIndented(2, $"return conditionalFunc.Invoke() ? AddUri(uri) : this;");
+        sb.AppendLinesIndented(1, "}");
+
+        sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, "");
+
+        sb.AppendLinesIndented(1, "/// <summary>");
+        sb.AppendLinesIndented(1, $"/// Adds a uri to the policy.");
+        sb.AppendLinesIndented(1, "/// </summary>");
+        sb.AppendLinesIndented(1, "/// <param name=\"uriBuilder\">Builds the uri to be added to the policy, supplying the baseUri and baseDomain parameters</param>");
+        sb.AppendLinesIndented(1, "/// <returns></returns>");
+        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddUri(Func<string, string, string> uriBuilder)");
+        sb.AppendLinesIndented(1, "{");
+        sb.AppendLinesIndented(2, "return AddValue(uriBuilder);");
+        sb.AppendLinesIndented(1, "}");
+
+        sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, "");
+
+        sb.AppendLinesIndented(1, "/// <summary>");
+        sb.AppendLinesIndented(1, $"/// Conditionally adds a uri to the policy.");
+        sb.AppendLinesIndented(1, "/// </summary>");
+        sb.AppendLinesIndented(1, "/// <param name=\"uriBuilder\">Builds the uri to be added to the policy, supplying the baseUri and baseDomain parameters</param>");
+        sb.AppendLinesIndented(1, "/// <param name=\"conditionalFunc\">The conditional function delegate determining whether to add the nonce to the policy</param>");
+        sb.AppendLinesIndented(1, "/// <returns></returns>");
+        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddUriIf(Func<string, string, string> uriBuilder, Func<bool> conditionalFunc)");
+        sb.AppendLinesIndented(1, "{");
+        sb.AppendLinesIndented(2, $"return conditionalFunc.Invoke() ? AddUri(uriBuilder) : this;");
         sb.AppendLinesIndented(1, "}");
 
         return true;

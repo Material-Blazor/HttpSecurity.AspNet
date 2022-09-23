@@ -36,6 +36,9 @@ public class ContentSecurityPolicyMiddleware
     /// <returns></returns>
     public async Task Invoke(HttpContext context, ContentSecurityPolicyService service)
     {
+        var baseUri = context.Request.Host.ToUriComponent();
+        var baseDomain = context.Request.Host.Host;
+        
         context.Response.Headers.Add("X-Frame-Options", "DENY");
         context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
         context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
@@ -45,7 +48,7 @@ public class ContentSecurityPolicyMiddleware
         context.Response.Headers.Add("Permissions-Policy", "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()");
         context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 
-        context.Response.Headers.Add("Content-Security-Policy", service.GetContentSecurityPolicy());
+        context.Response.Headers.Add("Content-Security-Policy", service.GetContentSecurityPolicy(baseUri, baseDomain));
 
         await _next(context);
     }
