@@ -1,4 +1,4 @@
-﻿namespace ContentSecurityPolicy;
+﻿namespace HttpSecurity;
 
 public class Class1
 {

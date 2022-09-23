@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace ContentSecurityPolicy.AspNetCore;
+namespace HttpSecurity.AspNetCore;
 
 [Generator]
 internal class SourceGenerator : ISourceGenerator
@@ -45,7 +45,8 @@ internal class SourceGenerator : ISourceGenerator
         //CSharpParseOptions options = (context.Compilation as CSharpCompilation).SyntaxTrees[0].Options as CSharpParseOptions;
         Compilation compilation = context.Compilation;
 
-        List<INamedTypeSymbol> policyClasseSymbols = new();
+        List<INamedTypeSymbol> policyClassSymbols = new();
+        Dictionary<string, INamedTypeSymbol> policyOptionClassSymbols = new();
         INamedTypeSymbol cspOptionsClassSymbol = null;
 
         foreach (var classNode in receiver.Classes)
@@ -65,7 +66,7 @@ internal class SourceGenerator : ISourceGenerator
                 sb.AppendLinesIndented(0, "using System;");
                 sb.AppendLinesIndented(0, "using System.Linq;");
                 sb.AppendLinesIndented(0, "");
-                sb.AppendLinesIndented(0, $"namespace ContentSecurityPolicy.AspNetCore;");
+                sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNetCore;");
                 sb.AppendLinesIndented(0, "");
                 sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(classSymbol)} : {GetClassBaseTypeName(classSymbol)}");
                 sb.AppendLinesIndented(0, "{");
@@ -93,9 +94,13 @@ internal class SourceGenerator : ISourceGenerator
 
                 if (codeAdded)
                 {
-                    if (!GetClassTypeName(classSymbol).Contains("Options"))
+                    if (GetClassTypeName(classSymbol).Contains("Options"))
                     {
-                        policyClasseSymbols.Add(classSymbol);
+                        policyOptionClassSymbols[GetClassTypeName(classSymbol).Replace("Options", "")] = classSymbol;
+                    }
+                    else
+                    {
+                        policyClassSymbols.Add(classSymbol);
                     }
 
                     context.AddSource($"{GetClassTypeName(classSymbol, true)}.AddedFunctions.g.cs", sb.ToString());
@@ -103,11 +108,11 @@ internal class SourceGenerator : ISourceGenerator
             }
         }
 
-        context.AddSource($"{GetClassTypeName(cspOptionsClassSymbol, true)}.AddedFunctions.g.cs", ProcessContentSecurityPolicyOptions(cspOptionsClassSymbol, policyClasseSymbols).ToString());
+        context.AddSource($"{GetClassTypeName(cspOptionsClassSymbol, true)}.AddedFunctions.g.cs", ProcessContentSecurityPolicyOptions(cspOptionsClassSymbol, policyClassSymbols, policyOptionClassSymbols).ToString());
     }
 
 
-    private StringBuilder ProcessContentSecurityPolicyOptions(INamedTypeSymbol cspOptionsClassSymbol, List<INamedTypeSymbol> policyClassSymbols)
+    private StringBuilder ProcessContentSecurityPolicyOptions(INamedTypeSymbol cspOptionsClassSymbol, List<INamedTypeSymbol> policyClassSymbols, Dictionary<string, INamedTypeSymbol> policyOptionClassSymbols)
     {
         StringBuilder sb = new();
         var isFirst = true;
@@ -115,7 +120,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(0, "using System;");
         sb.AppendLinesIndented(0, "using System.Linq;");
         sb.AppendLinesIndented(0, "");
-        sb.AppendLinesIndented(0, $"namespace ContentSecurityPolicy.AspNetCore;");
+        sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNetCore;");
         sb.AppendLinesIndented(0, "");
         sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(cspOptionsClassSymbol)}");
         sb.AppendLinesIndented(0, "{");
@@ -125,6 +130,7 @@ internal class SourceGenerator : ISourceGenerator
             var attribute = policyClassSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"PolicyAttribute").FirstOrDefault();
             var cspPolicyName = attribute.ConstructorArguments.FirstOrDefault().Value;
             var policyClassTypeName = GetClassTypeName(policyClassSymbol);
+            var hasAddAttributes = policyOptionClassSymbols[policyClassTypeName].GetAttributes().Where(ad => ad.AttributeClass.Name.Substring(0, 3) == $"Add").Any();
 
             if (!isFirst)
             {
@@ -134,35 +140,38 @@ internal class SourceGenerator : ISourceGenerator
 
             isFirst = false;
 
-            sb.AppendLinesIndented(1, "/// <summary>");
-            sb.AppendLinesIndented(1, $"/// Adds a {cspPolicyName} policy.");
-            sb.AppendLinesIndented(1, "/// </summary>");
-            sb.AppendLinesIndented(1, "/// <param name=\"configureOptions\">Configures policy options</param>");
-            sb.AppendLinesIndented(1, "/// <returns></returns>");
-            sb.AppendLinesIndented(1, $"public ContentSecurityPolicyOptions Add{policyClassTypeName}()");
-            sb.AppendLinesIndented(1, "{");
-            sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
-            sb.AppendLinesIndented(2, "");
-            sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(\"nonce\"));");
-            sb.AppendLinesIndented(2, "");
-            sb.AppendLinesIndented(2, "return this;");
-            sb.AppendLinesIndented(1, "}");
-
-            sb.AppendLinesIndented(1, "");
-            sb.AppendLinesIndented(1, "");
-            sb.AppendLinesIndented(1, "/// <summary>");
-            sb.AppendLinesIndented(1, $"/// Adds a {cspPolicyName} policy.");
-            sb.AppendLinesIndented(1, "/// </summary>");
-            sb.AppendLinesIndented(1, "/// <param name=\"configureOptions\">Configures policy options</param>");
-            sb.AppendLinesIndented(1, "/// <returns></returns>");
-            sb.AppendLinesIndented(1, $"public ContentSecurityPolicyOptions Add{policyClassTypeName}(Action<{policyClassTypeName}Options> configureOptions)");
-            sb.AppendLinesIndented(1, "{");
-            sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
-            sb.AppendLinesIndented(2, "");
-            sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(\"nonce\", configureOptions));");
-            sb.AppendLinesIndented(2, "");
-            sb.AppendLinesIndented(2, "return this;");
-            sb.AppendLinesIndented(1, "}");
+            if (hasAddAttributes)
+            {
+                sb.AppendLinesIndented(1, "/// <summary>");
+                sb.AppendLinesIndented(1, $"/// Adds a {cspPolicyName} policy.");
+                sb.AppendLinesIndented(1, "/// </summary>");
+                sb.AppendLinesIndented(1, "/// <param name=\"configureOptions\">Configures policy options</param>");
+                sb.AppendLinesIndented(1, "/// <returns></returns>");
+                sb.AppendLinesIndented(1, $"public ContentSecurityPolicyOptions Add{policyClassTypeName}(Action<{policyClassTypeName}Options> configureOptions)");
+                sb.AppendLinesIndented(1, "{");
+                sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
+                sb.AppendLinesIndented(2, "");
+                sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(\"nonce\", configureOptions));");
+                sb.AppendLinesIndented(2, "");
+                sb.AppendLinesIndented(2, "return this;");
+                sb.AppendLinesIndented(1, "}");
+            }
+            else
+            {
+                sb.AppendLinesIndented(1, "/// <summary>");
+                sb.AppendLinesIndented(1, $"/// Adds a {cspPolicyName} policy.");
+                sb.AppendLinesIndented(1, "/// </summary>");
+                sb.AppendLinesIndented(1, "/// <param name=\"configureOptions\">Configures policy options</param>");
+                sb.AppendLinesIndented(1, "/// <returns></returns>");
+                sb.AppendLinesIndented(1, $"public ContentSecurityPolicyOptions Add{policyClassTypeName}()");
+                sb.AppendLinesIndented(1, "{");
+                sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
+                sb.AppendLinesIndented(2, "");
+                sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(\"nonce\"));");
+                sb.AppendLinesIndented(2, "");
+                sb.AppendLinesIndented(2, "return this;");
+                sb.AppendLinesIndented(1, "}");
+            }
         }
 
         sb.AppendLinesIndented(0, "}");
@@ -505,9 +514,9 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, $"/// Adds a scheme source to the policy.");
         sb.AppendLinesIndented(1, "/// </summary>");
         sb.AppendLinesIndented(1, "/// <returns></returns>");
-        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddSchemeSource(SchemeSource schemeSource)");
+        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddSchemeSource(SchemeSource schemeSource, string uri)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "return AddValue($\"{schemeSource.ToString().ToLower()}:\");");
+        sb.AppendLinesIndented(2, "return AddValue($\"{schemeSource.ToString().ToLower()}: {uri}\");");
         sb.AppendLinesIndented(1, "}");
 
 
@@ -520,9 +529,9 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// </summary>");
         sb.AppendLinesIndented(1, $"/// <param name=\"conditionalFunc\">The conditional function delegate determining whether to add the nonce to the policy</param>");
         sb.AppendLinesIndented(1, "/// <returns></returns>");
-        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddSchemeSourceIf(SchemeSource schemeSource, Func<bool> conditionalFunc)");
+        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddSchemeSourceIf(SchemeSource schemeSource, string uri, Func<bool> conditionalFunc)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, $"return conditionalFunc.Invoke() ? AddSchemeSource(schemeSource) : this;");
+        sb.AppendLinesIndented(2, $"return conditionalFunc.Invoke() ? AddSchemeSource(schemeSource, uri) : this;");
         sb.AppendLinesIndented(1, "}");
 
         return true;

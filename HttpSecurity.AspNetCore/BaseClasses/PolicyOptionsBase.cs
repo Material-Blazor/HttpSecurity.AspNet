@@ -1,4 +1,4 @@
-﻿namespace ContentSecurityPolicy.AspNetCore;
+﻿namespace HttpSecurity.AspNetCore;
 
 /// <summary>
 /// All policies inherit from this base class.

@@ -1,4 +1,4 @@
-﻿namespace ContentSecurityPolicy.AspNetCore;
+﻿namespace HttpSecurity.AspNetCore;
 
 /// <summary>
 /// Hash algorithms available for content security policies.

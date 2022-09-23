@@ -1,4 +1,4 @@
-﻿namespace ContentSecurityPolicy.AspNetCore;
+﻿namespace HttpSecurity.AspNetCore;
 
 /// <summary>
 /// Base interface for a policy.

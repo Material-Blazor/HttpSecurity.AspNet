@@ -1,4 +1,4 @@
-﻿namespace ContentSecurityPolicy.AspNetCore;
+﻿namespace HttpSecurity.AspNetCore;
 
 
 /// <summary>
@@ -20,7 +20,6 @@
 [AddAllowTopNavigation]
 [AddAllowTopNavigationAccessByUserActivation]
 [AddAllowTopNavigationToCustomProtocols]
-
 public sealed partial class SandboxPolicyOptions : PolicyOptionsBase
 {
 }

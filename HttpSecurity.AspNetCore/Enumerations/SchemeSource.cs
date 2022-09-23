@@ -1,4 +1,4 @@
-﻿namespace ContentSecurityPolicy.AspNetCore;
+﻿namespace HttpSecurity.AspNetCore;
 
 /// <summary>
 /// Scheme sources available for content security policies.

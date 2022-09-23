@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace ContentSecurityPolicy.AspNetCore;
+namespace HttpSecurity.AspNetCore;
 
 
 /// <summary>

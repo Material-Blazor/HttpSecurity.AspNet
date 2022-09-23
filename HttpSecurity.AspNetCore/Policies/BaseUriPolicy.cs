@@ -1,4 +1,4 @@
-﻿namespace ContentSecurityPolicy.AspNetCore;
+﻿namespace HttpSecurity.AspNetCore;
 
 
 /// <summary>
@@ -14,6 +14,7 @@
 [AddSchemeSource]
 [AddUnsafeEval]
 [AddUnsafeHashes]
+[AddUri]
 public sealed partial class BaseUriPolicyOptions : PolicyOptionsBase
 {
 }
