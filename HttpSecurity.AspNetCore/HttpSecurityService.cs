@@ -22,15 +22,51 @@ public class HttpSecurityService
     /// <param name="baseUri"></param>
     /// <param name="baseDomain"></param>
     /// <returns></returns>
-    public SortedDictionary<string, string> GetSecurityHeaders(string baseUri, string baseDomain)
+    public Dictionary<string, string> GetSecurityHeaders(string baseUri, string baseDomain)
     {
-        SortedDictionary<string, string> headers = new();
+        Dictionary<string, string> headers = new();
 
         string csp = _options.GetContentSecurityPolicy(baseUri, baseDomain);
 
         if (!string.IsNullOrWhiteSpace(csp))
         {
             headers["Content-Security-Policy"] = csp;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_options.CacheControl))
+        {
+            headers["Cache-Control"] = _options.CacheControl;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_options.Expires))
+        {
+            headers["Expires"] = _options.Expires;
+        }
+
+        if (_options.ReferrerPolicyDirective is not null)
+        {
+            headers["Referrer-Policy"] = ((ReferrerPolicyDirective)_options.ReferrerPolicyDirective) switch
+            {
+                ReferrerPolicyDirective.NoReferrer => "no-referrer",
+                ReferrerPolicyDirective.NoReferrerWhenDowngrade => "no-referrer-when-downgrade",
+                ReferrerPolicyDirective.Origin => "origin",
+                ReferrerPolicyDirective.OriginWhenCrossOrigin => "origin-when-cross-origin",
+                ReferrerPolicyDirective.SameOrigin => "same-origin",
+                ReferrerPolicyDirective.StrictOrigin => "strict-origin",
+                ReferrerPolicyDirective.StrictOriginWhenCrossOrigin => "strict-origin-when-cross-origin",
+                ReferrerPolicyDirective.UnsafeUrl => "unsafe-url",
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        if (_options.StrictTransportSecurityMaxAgeExpireTime > 0)
+        {
+            headers["Strict-Transport-Security"] = $"max-age={_options.StrictTransportSecurityMaxAgeExpireTime}{(_options.StrictTransportSecurityIncludeSubDomains ? " includeSubDomains" : "")}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(_options.PermissionsPolicy))
+        {
+            headers["Permissions-Policy"] = _options.PermissionsPolicy;
         }
 
         if (!string.IsNullOrWhiteSpace(_options.XClientId))

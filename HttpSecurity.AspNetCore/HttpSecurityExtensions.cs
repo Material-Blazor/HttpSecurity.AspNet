@@ -15,7 +15,7 @@ public static class HttpSecurityExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddContentSecurityPolicy(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddHttpsSecurityHeaders(this IServiceCollection serviceCollection)
     {
         if (serviceCollection == null)
         {
@@ -32,7 +32,7 @@ public static class HttpSecurityExtensions
     /// <param name="services"></param>
     /// <param name="configureOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddContentSecurityPolicy(this IServiceCollection serviceCollection, Action<HttpSecurityOptions> configureOptions)
+    public static IServiceCollection AddHttpsSecurityHeaders(this IServiceCollection serviceCollection, Action<HttpSecurityOptions> configureOptions)
     {
         if (serviceCollection == null)
         {
@@ -58,7 +58,7 @@ public static class HttpSecurityExtensions
     /// <param name="app"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IApplicationBuilder UseContentSecurityPolicy(this IApplicationBuilder app)
+    public static IApplicationBuilder UseHttpSecurityHeaders(this IApplicationBuilder app)
     {
         if (app == null)
         {
@@ -76,7 +76,7 @@ public static class HttpSecurityExtensions
     /// <param name="options"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IApplicationBuilder UseContentSecurityPolicy(this IApplicationBuilder app, HttpSecurityOptions options)
+    public static IApplicationBuilder UseHttpSecurityHeaders(this IApplicationBuilder app, HttpSecurityOptions options)
     {
         if (app == null)
         {

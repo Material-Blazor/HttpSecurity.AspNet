@@ -1,4 +1,6 @@
-﻿namespace HttpSecurity.AspNetCore;
+﻿using System.Text.Json.Serialization;
+
+namespace HttpSecurity.AspNetCore;
 
 
 /// <summary>
@@ -10,6 +12,42 @@ public sealed partial class HttpSecurityOptions
 
 
     private string PolicyString { get; set; } = string.Empty;
+
+
+    /// <summary>
+    /// The requested directive.
+    /// </summary>
+    internal string CacheControl { get; private set; } = string.Empty;
+
+
+    /// <summary>
+    /// The requested directive.
+    /// </summary>
+    internal string Expires { get; private set; } = string.Empty;
+
+
+    /// <summary>
+    /// The requested directive.
+    /// </summary>
+    internal ReferrerPolicyDirective? ReferrerPolicyDirective { get; private set; } = null;
+
+
+    /// <summary>
+    /// The requested directive.
+    /// </summary>
+    internal string PermissionsPolicy { get; private set; } = string.Empty;
+
+
+    /// <summary>
+    /// The requested directive.
+    /// </summary>
+    internal ulong StrictTransportSecurityMaxAgeExpireTime { get; private set; } = 0;
+
+
+    /// <summary>
+    /// The requested directive.
+    /// </summary>
+    internal bool StrictTransportSecurityIncludeSubDomains { get; private set; } = false;
 
 
     /// <summary>
@@ -59,6 +97,63 @@ public sealed partial class HttpSecurityOptions
         }
 
         return PolicyString;
+    }
+
+
+    /// <summary>
+    /// Adds an Cache-Control directive with the value supplied.
+    /// </summary>
+    /// <returns></returns>
+    public HttpSecurityOptions AddCacheControl(string cacheControl)
+    {
+        CacheControl = cacheControl;
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds an Expires directive with the value supplied.
+    /// </summary>
+    /// <returns></returns>
+    public HttpSecurityOptions AddExpires(string expires)
+    {
+        Expires = expires;
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds an Referrer-Policy directive.
+    /// </summary>
+    /// <param name="xFrameOptionsDirective"></param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddReferrerPolicy(ReferrerPolicyDirective referrerPolicyDirective)
+    {
+        ReferrerPolicyDirective = referrerPolicyDirective;
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds an Permissions-Policy directive with the value supplied.
+    /// </summary>
+    /// <returns></returns>
+    public HttpSecurityOptions AddPermissionsPolicy(string permissionsPolicy)
+    {
+        PermissionsPolicy = permissionsPolicy;
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds an Strict-Transport-Security directive with the value supplied.
+    /// </summary>
+    /// <returns></returns>
+    public HttpSecurityOptions AddStrictTransportSecurity(ulong maxAgeExpireTime, bool includeSubDomains = false)
+    {
+        StrictTransportSecurityMaxAgeExpireTime = maxAgeExpireTime;
+        StrictTransportSecurityIncludeSubDomains = includeSubDomains;
+        return this;
     }
 
 

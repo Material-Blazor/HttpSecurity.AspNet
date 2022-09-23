@@ -31,10 +31,6 @@ public class HttpSecurityMiddleware
         var baseUri = context.Request.Host.ToUriComponent();
         var baseDomain = context.Request.Host.Host;
         
-        context.Response.Headers.Add("Referrer-Policy", "no-referrer");
-        context.Response.Headers.Add("Permissions-Policy", "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()");
-        context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
-
         foreach (var header in service.GetSecurityHeaders(baseUri, baseDomain))
         {
             context.Response.Headers.Add(header.Key, header.Value);

@@ -10,7 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
-builder.Services.AddContentSecurityPolicy(options => 
+builder.Services.AddHttpsSecurityHeaders(options => 
 {
     options
         // Content Security Policies
@@ -35,6 +35,11 @@ builder.Services.AddContentSecurityPolicy(options =>
         .AddWorkerSrcCSP(o => o.AddSelf())
 
         // Other headers
+        .AddCacheControl("public, max-age=86400")
+        .AddExpires("0")
+        .AddReferrerPolicy(ReferrerPolicyDirective.NoReferrer)
+        .AddPermissionsPolicy("accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()")
+        .AddStrictTransportSecurity(31536000, true)
         .AddXClientId("Material.Blazor")
         .AddXContentTypeOptionsNoSniff()
         .AddXFrameOptionsDirective(XFrameOptionsDirective.Deny)
@@ -56,9 +61,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.UseHttpSecurityHeaders();
 
-app.UseContentSecurityPolicy();
+app.UseStaticFiles();
 
 app.UseRouting();
 
