@@ -16,7 +16,7 @@ builder.Services.AddContentSecurityPolicy(options =>
         .AddBaseUriCSP(o => o.AddSelf())
         .AddBlockAllMixedContentCSP()
         .AddChildSrcCSP(o => o.AddSelf())
-        .AddConnectSrcCSP(o => o.AddSelf().AddUri((baseUri, baseDomain) => $"wss://{baseDomain}:*").AddUri("www.google-analytics.com").AddUri("region1.google-analytics.com")) // want to add wss://{baseDomain}:*
+        .AddConnectSrcCSP(o => o.AddSelf().AddUri((baseUri, baseDomain) => $"wss://{baseDomain}:*").AddUri("www.google-analytics.com").AddUri("region1.google-analytics.com"))
         .AddDefaultSrcCSP(o => o.AddSelf())
         .AddFontSrcCSP(o => o.AddUri("use.typekit.net").AddUri("fonts.googleapis.com").AddUri("fonts.gstatic.com"))
         .AddFrameAncestorsCSP(o => o.AddNone())
@@ -26,7 +26,8 @@ builder.Services.AddContentSecurityPolicy(options =>
         .AddManifestSrcCSP(o => o.AddSelf())
         .AddMediaSrcCSP(o => o.AddSelf())
         .AddPrefetchSrcCSP(o => o.AddSelf())
-        .AddObjectSrcCSP(o => o.AddNone()) // need report to and report uri, but both require base uri
+        .AddObjectSrcCSP(o => o.AddNone())
+        .AddReportUriCSP(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
         .AddScriptSrcCSP(o => o.AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddStrictDynamic().AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js"))
         .AddStyleSrcCSP(o => o.AddSelf().AddUnsafeInline().AddReportSample().AddUri("p.typekit.net").AddUri("use.typekit.net").AddUri("fonts.googleapis.com").AddUri("fonts.gstatic.com"))
         .AddUpgradeInsecureRequestsCSP()
