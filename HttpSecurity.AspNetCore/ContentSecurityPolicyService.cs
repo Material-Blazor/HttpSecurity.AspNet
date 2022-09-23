@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace ContentSecurityPolicy.AspNetCore;
 
@@ -9,15 +8,13 @@ namespace ContentSecurityPolicy.AspNetCore;
 /// </summary>
 public class ContentSecurityPolicyService
 {
-    private readonly ILogger logger;
-    private readonly IOptions<ContentSecurityPolicyOptions> options;
+    private readonly ContentSecurityPolicyOptions _options;
 
 
     /// <inheritdoc/>
-    public ContentSecurityPolicyService(ILogger<ContentSecurityPolicyService> logger, IOptions<ContentSecurityPolicyOptions> options)
+    public ContentSecurityPolicyService(ContentSecurityPolicyOptions options)
     {
-        this.logger = logger;
-        this.options = options;
+        _options = options;
     }
 
 
@@ -26,6 +23,6 @@ public class ContentSecurityPolicyService
     /// </summary>
     public string GetContentSecurityPolicy()
     {
-        return options.Value.GetContentSecurityPolicy();
+        return _options.GetContentSecurityPolicy();
     }
 }

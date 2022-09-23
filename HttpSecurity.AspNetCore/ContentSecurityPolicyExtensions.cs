@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace CompressedStaticFiles;
+namespace HttpSecurity.AspNetCore;
 
 
 /// <summary>
@@ -16,9 +16,40 @@ public static class CompressedStaticFileExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddContentSecurityPolicy(this IServiceCollection services)
+    public static IServiceCollection AddContentSecurityPolicy(this IServiceCollection serviceCollection)
     {
-        return services.AddSingleton<ContentSecurityPolicyService>();
+        if (serviceCollection == null)
+        {
+            throw new ArgumentNullException(nameof(serviceCollection));
+        }
+
+        return serviceCollection.AddScoped<ContentSecurityPolicyService>();
+    }
+
+
+    /// <summary>
+    /// Adds the compressed and image alternative file provider services as singletons.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configureOptions"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddContentSecurityPolicy(this IServiceCollection serviceCollection, Action<ContentSecurityPolicyOptions> configureOptions)
+    {
+        if (serviceCollection == null)
+        {
+            throw new ArgumentNullException(nameof(serviceCollection));
+        }
+
+        if (configureOptions == null)
+        {
+            throw new ArgumentNullException(nameof(configureOptions));
+        }
+
+        ContentSecurityPolicyOptions options = new();
+
+        configureOptions.Invoke(options);
+
+        return serviceCollection.AddScoped(serviceProvider => new ContentSecurityPolicyService(options));
     }
 
 
