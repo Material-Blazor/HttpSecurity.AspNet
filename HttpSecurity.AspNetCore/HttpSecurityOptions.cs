@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Serialization;
-
-namespace HttpSecurity.AspNetCore;
+﻿namespace HttpSecurity.AspNetCore;
 
 
 /// <summary>
-/// Options for content security policy.
+/// Options for http security.
 /// </summary>
 public sealed partial class HttpSecurityOptions
 {

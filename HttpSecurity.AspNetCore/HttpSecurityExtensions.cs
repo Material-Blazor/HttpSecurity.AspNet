@@ -11,7 +11,7 @@ namespace HttpSecurity.AspNetCore;
 public static class HttpSecurityExtensions
 {
     /// <summary>
-    /// Adds the compressed and image alternative file provider services as singletons.
+    /// Adds the http security headers service as a scoped service.
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
@@ -27,7 +27,7 @@ public static class HttpSecurityExtensions
 
 
     /// <summary>
-    /// Adds the compressed and image alternative file provider services as singletons.
+    /// Adds the http security headers service as a scoped service.
     /// </summary>
     /// <param name="services"></param>
     /// <param name="configureOptions"></param>
@@ -53,7 +53,8 @@ public static class HttpSecurityExtensions
 
 
     /// <summary>
-    /// Middleware to use compressed static assets. Substitute this for <see cref="IApplicationBuilder.UseStaticAssets"/>.
+    /// Adds security headers and policies to the context response. Place this immediately after <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection()"/>
+    /// to enable this middleware to over-ride with your values any headers that may have been set by subsequent middleware.
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
@@ -70,7 +71,8 @@ public static class HttpSecurityExtensions
 
 
     /// <summary>
-    /// Middleware to use compressed static assets. Substitute this for <see cref="IApplicationBuilder.UseStaticAssets"/>.
+    /// Adds security headers and policies to the context response. Place this immediately after <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection()"/>
+    /// to enable this middleware to over-ride with your values any headers that may have been set by subsequent middleware.
     /// </summary>
     /// <param name="app"></param>
     /// <param name="options"></param>

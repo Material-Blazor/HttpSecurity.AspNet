@@ -1,7 +1,5 @@
 using HttpSecurity.AspNetCore;
 using HttpSecurity.Example.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,9 +42,7 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddXContentTypeOptionsNoSniff()
         .AddXFrameOptionsDirective(XFrameOptionsDirective.Deny)
         .AddXXssProtectionDirective(XXssProtectionDirective.OneModeBlock)
-        .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None)
-        
-        ;
+        .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None);
 });
 
 var app = builder.Build();
