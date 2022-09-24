@@ -22,7 +22,7 @@ public static class HttpSecurityExtensions
             throw new ArgumentNullException(nameof(serviceCollection));
         }
 
-        return serviceCollection.AddScoped<HttpSecurityService>();
+        return serviceCollection.AddScoped<IHttpSecurityService, HttpSecurityService>();
     }
 
 
@@ -48,7 +48,7 @@ public static class HttpSecurityExtensions
 
         configureOptions.Invoke(options);
 
-        return serviceCollection.AddScoped(serviceProvider => new HttpSecurityService(options));
+        return serviceCollection.AddScoped<IHttpSecurityService>(serviceProvider => new HttpSecurityService(options));
     }
 
 

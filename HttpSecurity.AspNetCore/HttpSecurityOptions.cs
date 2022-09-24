@@ -9,6 +9,9 @@ public sealed partial class HttpSecurityOptions
     private List<ContentSecurityPolicyBase> Policies { get; set; } = new();
 
 
+    internal string NonceValue { get; private set; }
+
+
     private string PolicyString { get; set; } = string.Empty;
 
 
@@ -82,6 +85,23 @@ public sealed partial class HttpSecurityOptions
     /// The requested X-XSS-Protection directive.
     /// </summary>
     internal string XXssProtectionReportingUri { get; private set; } = string.Empty;
+
+
+    public HttpSecurityOptions() : this(32)
+    {
+    }
+
+
+    public HttpSecurityOptions(uint nonceLength)
+    {
+        var bytes = new byte[nonceLength];
+
+        var rnd = new Random();
+
+        rnd.NextBytes(bytes);
+
+        NonceValue = Convert.ToBase64String(bytes);
+    }
 
 
     /// <summary>

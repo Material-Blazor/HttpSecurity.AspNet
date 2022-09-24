@@ -4,9 +4,12 @@
 /// <summary>
 /// Implementation of <see cref="IAlternativeFileProvider"/> for compressed files such as CSS or JS.
 /// </summary>
-public class HttpSecurityService
+internal sealed class HttpSecurityService : IHttpSecurityService
 {
     private readonly HttpSecurityOptions _options;
+
+    private string BaseUri { get; set; } = "";
+    private string BaseDomain { get; set; } = "";
 
 
     /// <inheritdoc/>
@@ -16,13 +19,42 @@ public class HttpSecurityService
     }
 
 
+    /// <inheritdoc/>
+    public Dictionary<string, string> GetSecurityHeaders()
+    {
+        return BuildSecurityHeaders(BaseUri, BaseDomain);
+    }
+
+
+    /// <inheritdoc/>
+    public string GetNonce()
+    {
+        return _options.NonceValue;
+    }
+
+
     /// <summary>
-    /// Returns a sorted list of security headers.
+    /// Returns a dictionary of security headers.
     /// </summary>
     /// <param name="baseUri"></param>
     /// <param name="baseDomain"></param>
     /// <returns></returns>
-    public Dictionary<string, string> GetSecurityHeaders(string baseUri, string baseDomain)
+    internal Dictionary<string, string> GetSecurityHeaders(string baseUri, string baseDomain)
+    {
+        BaseUri = baseUri;
+        BaseDomain = baseDomain;
+
+        return GetSecurityHeaders();
+    }
+
+
+    /// <summary>
+    /// Returns a dictionary of security headers.
+    /// </summary>
+    /// <param name="baseUri"></param>
+    /// <param name="baseDomain"></param>
+    /// <returns></returns>
+    private Dictionary<string, string> BuildSecurityHeaders(string baseUri, string baseDomain)
     {
         Dictionary<string, string> headers = new();
 
@@ -110,5 +142,10 @@ public class HttpSecurityService
         }
 
         return headers;
+    }
+
+    Dictionary<string, string> IHttpSecurityService.GetSecurityHeaders()
+    {
+        throw new NotImplementedException();
     }
 }

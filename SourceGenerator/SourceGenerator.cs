@@ -150,7 +150,7 @@ internal class SourceGenerator : ISourceGenerator
                 sb.AppendLinesIndented(1, "{");
                 sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
                 sb.AppendLinesIndented(2, "");
-                sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(\"nonce\", configureOptions));");
+                sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(NonceValue, configureOptions));");
                 sb.AppendLinesIndented(2, "");
                 sb.AppendLinesIndented(2, "return this;");
                 sb.AppendLinesIndented(1, "}");

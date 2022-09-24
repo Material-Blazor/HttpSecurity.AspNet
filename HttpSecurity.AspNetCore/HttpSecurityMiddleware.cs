@@ -7,7 +7,7 @@ namespace HttpSecurity.AspNetCore;
 /// <summary>
 /// Http security middleware.
 /// </summary>
-public class HttpSecurityMiddleware
+public sealed class HttpSecurityMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IOptions<HttpSecurityOptions> _options;
@@ -26,14 +26,14 @@ public class HttpSecurityMiddleware
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    public async Task Invoke(HttpContext context, HttpSecurityService service)
+    public async Task Invoke(HttpContext context, IHttpSecurityService service)
     {
         await _next(context);
 
         var baseUri = context.Request.Host.ToUriComponent();
         var baseDomain = context.Request.Host.Host;
         
-        foreach (var header in service.GetSecurityHeaders(baseUri, baseDomain))
+        foreach (var header in ((HttpSecurityService)service).GetSecurityHeaders(baseUri, baseDomain))
         {
             context.Response.Headers[header.Key] = header.Value;
         }

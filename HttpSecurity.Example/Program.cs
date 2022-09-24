@@ -27,8 +27,8 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddPrefetchSrcCSP(o => o.AddSelf())
         .AddObjectSrcCSP(o => o.AddNone())
         .AddReportUriCSP(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
-        .AddScriptSrcCSP(o => o.AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddStrictDynamic().AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js"))
-        .AddStyleSrcCSP(o => o.AddSelf().AddUnsafeInline().AddReportSample().AddUri("p.typekit.net").AddUri("use.typekit.net").AddUri("fonts.googleapis.com").AddUri("fonts.gstatic.com"))
+        .AddScriptSrcCSP(o => o.AddSelf().AddNonce().AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddStrictDynamic().AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js"))
+        .AddStyleSrcCSP(o => o.AddNonce().AddSelf().AddUnsafeInline().AddReportSample().AddUri("p.typekit.net").AddUri("use.typekit.net").AddUri("fonts.googleapis.com").AddUri("fonts.gstatic.com"))
         .AddUpgradeInsecureRequestsCSP()
         .AddWorkerSrcCSP(o => o.AddSelf())
 
