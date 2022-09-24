@@ -14,23 +14,10 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
 
     /// <inheritdoc/>
-    public HttpSecurityService(HttpSecurityOptions options) : this (options, 32)
-    {
-    }
-
-
-    /// <inheritdoc/>
-    public HttpSecurityService(HttpSecurityOptions options, uint nonceLength)
+    public HttpSecurityService(HttpSecurityOptions options)
     {
         _options = options;
-
-        var bytes = new byte[nonceLength];
-
-        var rnd = new Random(Guid.NewGuid().GetHashCode());
-
-        rnd.NextBytes(bytes);
-
-        NonceValue = Convert.ToBase64String(bytes);
+        NonceValue = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
     }
 
 
