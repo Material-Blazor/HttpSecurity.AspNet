@@ -143,9 +143,4 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
         return headers;
     }
-
-    Dictionary<string, string> IHttpSecurityService.GetSecurityHeaders()
-    {
-        throw new NotImplementedException();
-    }
 }

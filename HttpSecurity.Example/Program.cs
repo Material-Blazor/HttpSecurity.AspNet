@@ -8,16 +8,16 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
-builder.Services.AddHttpsSecurityHeaders(options => 
+builder.Services.AddHttpsSecurityHeaders(options =>
 {
     options
         // Content Security Policies
         .AddBaseUriCSP(o => o.AddSelf())
         .AddBlockAllMixedContentCSP()
         .AddChildSrcCSP(o => o.AddSelf())
-        .AddConnectSrcCSP(o => o.AddSelf().AddUri((baseUri, baseDomain) => $"wss://{baseDomain}:*").AddUri("www.google-analytics.com").AddUri("region1.google-analytics.com"))
-        .AddDefaultSrcCSP(o => o.AddSelf())
-        .AddFontSrcCSP(o => o.AddUri("use.typekit.net").AddUri("fonts.googleapis.com").AddUri("fonts.gstatic.com"))
+        .AddConnectSrcCSP(o => o.AddSelf().AddUri((baseUri, baseDomain) => $"wss://{baseDomain}:*"))
+        .AddDefaultSrcCSP(o => o.AddSelf().AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline())
+        .AddFontSrcCSP(o => o.AddSelf())
         .AddFrameAncestorsCSP(o => o.AddNone())
         .AddFrameSrcCSP(o => o.AddSelf())
         .AddFormActionCSP(o => o.AddNone())
@@ -27,8 +27,8 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddPrefetchSrcCSP(o => o.AddSelf())
         .AddObjectSrcCSP(o => o.AddNone())
         .AddReportUriCSP(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
-        .AddScriptSrcCSP(o => o.AddSelf().AddNonce().AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddStrictDynamic().AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js"))
-        .AddStyleSrcCSP(o => o.AddNonce().AddSelf().AddUnsafeInline().AddReportSample().AddUri("p.typekit.net").AddUri("use.typekit.net").AddUri("fonts.googleapis.com").AddUri("fonts.gstatic.com"))
+        .AddScriptSrcCSP(o => o.AddSelf().AddNonce().AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddUriIf((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js", () => builder.Environment.IsDevelopment()).AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js"))
+        .AddStyleSrcCSP(o => o.AddSelf().AddUnsafeInline().AddUnsafeHashes().AddReportSample())
         .AddUpgradeInsecureRequestsCSP()
         .AddWorkerSrcCSP(o => o.AddSelf())
 
@@ -42,7 +42,8 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddXContentTypeOptionsNoSniff()
         .AddXFrameOptionsDirective(XFrameOptionsDirective.Deny)
         .AddXXssProtectionDirective(XXssProtectionDirective.OneModeBlock)
-        .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None);
+        .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None)
+        ;
 });
 
 var app = builder.Build();
