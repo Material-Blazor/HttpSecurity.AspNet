@@ -9,12 +9,6 @@ public sealed partial class HttpSecurityOptions
     private List<ContentSecurityPolicyBase> Policies { get; set; } = new();
 
 
-    internal string NonceValue { get; private set; }
-
-
-    private string PolicyString { get; set; } = string.Empty;
-
-
     /// <summary>
     /// The requested directive.
     /// </summary>
@@ -87,34 +81,12 @@ public sealed partial class HttpSecurityOptions
     internal string XXssProtectionReportingUri { get; private set; } = string.Empty;
 
 
-    public HttpSecurityOptions() : this(32)
-    {
-    }
-
-
-    public HttpSecurityOptions(uint nonceLength)
-    {
-        var bytes = new byte[nonceLength];
-
-        var rnd = new Random();
-
-        rnd.NextBytes(bytes);
-
-        NonceValue = Convert.ToBase64String(bytes);
-    }
-
-
     /// <summary>
     /// Returns the content security policy string.
     /// </summary>
-    internal string GetContentSecurityPolicy(string baseUri, string baseDomain)
+    internal string GetContentSecurityPolicy(string nonceValue, string baseUri, string baseDomain)
     {
-        if (string.IsNullOrWhiteSpace(PolicyString))
-        {
-            PolicyString = string.Join(' ', Policies.Select(x => x.GetPolicyValue(baseUri, baseDomain)).OrderBy(x => x));
-        }
-
-        return PolicyString;
+        return string.Join(' ', Policies.Select(x => x.GetPolicyValue(nonceValue, baseUri, baseDomain)).OrderBy(x => x));
     }
 
 

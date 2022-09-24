@@ -15,5 +15,5 @@ public abstract class ContentSecurityPolicyBase
     /// Returns the full policy value string.
     /// </summary>
     /// <returns></returns>
-    public abstract string GetPolicyValue(string baseUri, string baseDomain);
+    public abstract string GetPolicyValue(string nonceValue, string baseUri, string baseDomain);
 }

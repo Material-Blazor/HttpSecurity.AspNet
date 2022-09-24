@@ -10,12 +10,27 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
     private string BaseUri { get; set; } = "";
     private string BaseDomain { get; set; } = "";
+    private string NonceValue { get; set; }
 
 
     /// <inheritdoc/>
-    public HttpSecurityService(HttpSecurityOptions options)
+    public HttpSecurityService(HttpSecurityOptions options) : this (options, 32)
+    {
+    }
+
+
+    /// <inheritdoc/>
+    public HttpSecurityService(HttpSecurityOptions options, uint nonceLength)
     {
         _options = options;
+
+        var bytes = new byte[nonceLength];
+
+        var rnd = new Random(Guid.NewGuid().GetHashCode());
+
+        rnd.NextBytes(bytes);
+
+        NonceValue = Convert.ToBase64String(bytes);
     }
 
 
@@ -29,7 +44,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
     /// <inheritdoc/>
     public string GetNonce()
     {
-        return _options.NonceValue;
+        return NonceValue;
     }
 
 
@@ -58,7 +73,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
     {
         Dictionary<string, string> headers = new();
 
-        string csp = _options.GetContentSecurityPolicy(baseUri, baseDomain);
+        string csp = _options.GetContentSecurityPolicy(NonceValue, baseUri, baseDomain);
 
         if (!string.IsNullOrWhiteSpace(csp))
         {

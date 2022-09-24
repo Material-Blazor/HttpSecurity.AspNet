@@ -148,9 +148,7 @@ internal class SourceGenerator : ISourceGenerator
                 sb.AppendLinesIndented(1, "/// <returns></returns>");
                 sb.AppendLinesIndented(1, $"public HttpSecurityOptions Add{policyClassTypeName}(Action<{policyClassTypeName}Options> configureOptions)");
                 sb.AppendLinesIndented(1, "{");
-                sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
-                sb.AppendLinesIndented(2, "");
-                sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(NonceValue, configureOptions));");
+                sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(configureOptions));");
                 sb.AppendLinesIndented(2, "");
                 sb.AppendLinesIndented(2, "return this;");
                 sb.AppendLinesIndented(1, "}");
@@ -164,9 +162,7 @@ internal class SourceGenerator : ISourceGenerator
                 sb.AppendLinesIndented(1, "/// <returns></returns>");
                 sb.AppendLinesIndented(1, $"public HttpSecurityOptions Add{policyClassTypeName}()");
                 sb.AppendLinesIndented(1, "{");
-                sb.AppendLinesIndented(2, "PolicyString = string.Empty;");
-                sb.AppendLinesIndented(2, "");
-                sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(\"nonce\"));");
+                sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}());");
                 sb.AppendLinesIndented(2, "");
                 sb.AppendLinesIndented(2, "return this;");
                 sb.AppendLinesIndented(1, "}");
@@ -199,25 +195,25 @@ internal class SourceGenerator : ISourceGenerator
 
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "");
-        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)}(string nonceValue)");
+        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)}()");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "Options = new(nonceValue);");
+        sb.AppendLinesIndented(2, "Options = new();");
         sb.AppendLinesIndented(1, "}");
 
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "");
-        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)}(string nonceValue, Action<{GetClassTypeName(classSymbol)}Options> configureOptions)");
+        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)}(Action<{GetClassTypeName(classSymbol)}Options> configureOptions)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "Options = new(nonceValue);");
+        sb.AppendLinesIndented(2, "Options = new();");
         sb.AppendLinesIndented(2, "configureOptions.Invoke(Options);");
         sb.AppendLinesIndented(1, "}");
 
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "/// <inheritdoc />");
-        sb.AppendLinesIndented(1, $"public override string GetPolicyValue(string baseUri, string baseDomain)");
+        sb.AppendLinesIndented(1, $"public override string GetPolicyValue(string nonceValue, string baseUri, string baseDomain)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "return Options.PolicyValueBuilders.Any() ? $\"{PolicyName} {string.Join(' ', Options.PolicyValueBuilders.Select(x => x.Invoke(baseUri, baseDomain)))};\" : $\"{PolicyName};\";");
+        sb.AppendLinesIndented(2, "return Options.PolicyValueBuilders.Any() ? $\"{PolicyName} {string.Join(' ', Options.PolicyValueBuilders.Select(x => x.Invoke(nonceValue, baseUri, baseDomain)))};\" : $\"{PolicyName};\";");
         sb.AppendLinesIndented(1, "}");
 
         return true;
@@ -233,13 +229,6 @@ internal class SourceGenerator : ISourceGenerator
             return codeAdded;
         }
 
-        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)}(string nonceValue)");
-        sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "NonceValue = nonceValue;");
-        sb.AppendLinesIndented(1, "}");
-
-        sb.AppendLinesIndented(1, "");
-        sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "/// <summary>");
         sb.AppendLinesIndented(1, "/// Adds a policy value.");
         sb.AppendLinesIndented(1, "/// </summary>");
@@ -247,7 +236,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"private {GetClassTypeName(classSymbol)} AddValue(string value)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "PolicyValueBuilders.Add((baseUri, baseDomain) => value);");
+        sb.AppendLinesIndented(2, "PolicyValueBuilders.Add((nonceValue, baseUri, baseDomain) => value);");
         sb.AppendLinesIndented(2, "return this;");
         sb.AppendLinesIndented(1, "}");
 
@@ -258,7 +247,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// </summary>");
         sb.AppendLinesIndented(1, "/// <param name=\"valueBuilder\">Builds the value to be added to the policy, supplying the baseUri and baseDomain parameters</param>");
         sb.AppendLinesIndented(1, "/// <returns></returns>");
-        sb.AppendLinesIndented(1, $"private {GetClassTypeName(classSymbol)} AddValue(Func<string, string, string> valueBuilder)");
+        sb.AppendLinesIndented(1, $"private {GetClassTypeName(classSymbol)} AddValue(Func<string, string, string, string> valueBuilder)");
         sb.AppendLinesIndented(1, "{");
         sb.AppendLinesIndented(2, "PolicyValueBuilders.Add(valueBuilder);");
         sb.AppendLinesIndented(2, "return this;");
@@ -448,7 +437,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddNonce()");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "return AddValue($\"'nonce-{NonceValue}'\");");
+        sb.AppendLinesIndented(2, "return AddValue((nonceValue, baseUri, baseDomain) => $\"'nonce-{nonceValue}'\");");
         sb.AppendLinesIndented(1, "}");
 
 
@@ -556,7 +545,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddSchemeSource(SchemeSource schemeSource, Func<string, string, string> uriBuilder)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "return AddValue((baseUri, baseDomain) => $\"{schemeSource.ToString().ToLower()}: {uriBuilder.Invoke(baseUri, baseDomain)}\");");
+        sb.AppendLinesIndented(2, "return AddValue((nonceValue, baseUri, baseDomain) => $\"{schemeSource.ToString().ToLower()}: {uriBuilder.Invoke(baseUri, baseDomain)}\");");
         sb.AppendLinesIndented(1, "}");
 
         sb.AppendLinesIndented(1, "");
@@ -624,7 +613,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddUri(Func<string, string, string> uriBuilder)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "return AddValue(uriBuilder);");
+        sb.AppendLinesIndented(2, "return AddValue((nonceValue, baseUri, baseDomain) => uriBuilder.Invoke(baseUri, baseDomain));");
         sb.AppendLinesIndented(1, "}");
 
         sb.AppendLinesIndented(1, "");
