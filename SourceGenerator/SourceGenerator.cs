@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace HttpSecurity.AspNetCore;
+namespace HttpSecurity.AspNet;
 
 [Generator]
 internal class SourceGenerator : ISourceGenerator
@@ -65,7 +65,7 @@ internal class SourceGenerator : ISourceGenerator
                 sb.AppendLinesIndented(0, "using System;");
                 sb.AppendLinesIndented(0, "using System.Linq;");
                 sb.AppendLinesIndented(0, "");
-                sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNetCore;");
+                sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNet;");
                 sb.AppendLinesIndented(0, "");
                 sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(classSymbol)} : {GetClassBaseTypeName(classSymbol)}");
                 sb.AppendLinesIndented(0, "{");
@@ -119,7 +119,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(0, "using System;");
         sb.AppendLinesIndented(0, "using System.Linq;");
         sb.AppendLinesIndented(0, "");
-        sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNetCore;");
+        sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNet;");
         sb.AppendLinesIndented(0, "");
         sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(httpSecurityOptionsClassSymbol)}");
         sb.AppendLinesIndented(0, "{");

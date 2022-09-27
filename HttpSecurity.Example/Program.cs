@@ -1,5 +1,4 @@
-using HttpSecurity.AspNetCore;
-using HttpSecurity.AspNetCore.Extensions;
+using HttpSecurity.AspNet;
 using HttpSecurity.Example.Data;
 
 var builder = WebApplication.CreateBuilder(args);
