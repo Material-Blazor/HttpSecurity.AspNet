@@ -51,7 +51,7 @@ jobs:
       if: github.event_name != 'workflow_dispatch'
 
     - name: Set ciSuffix as env variable
-      run: echo "ciSuffix=ci.$(date +'%Y-%m-%d--%H%M')" >> $GITHUB_ENV
+      run: echo "ciSuffix=ci.$(date +'%Y-%m-%d--%H-%M-%S')" >> $GITHUB_ENV
       shell: bash
       if: github.event_name != 'workflow_dispatch'
 
@@ -100,7 +100,7 @@ jobs:
     steps:
     - id: get
       run: |
-        echo "::set-output name=suffix::ci.$(date +'%Y-%m-%d--%H%M')"
+        echo "::set-output name=suffix::ci.$(date +'%Y-%m-%d--%H-%M-%S')"
     - id: show
       run: |
         echo "${{ steps.get.outputs.suffix }}"
@@ -120,10 +120,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET6
+    - name: Setup .NET7
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '7.0.x'
         include-prerelease: true
 #    - name: Install dependencies
 #      run: dotnet restore --verbosity normal
@@ -163,7 +163,7 @@ jobs:
     - name: Use prelease dotnet
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '7.0.x'
         include-prerelease: true
       if: github.event_name != 'workflow_dispatch'
 
