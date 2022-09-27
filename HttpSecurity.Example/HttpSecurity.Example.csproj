@@ -10,4 +10,20 @@
 		<ProjectReference Include="..\HttpSecurity.AspNetCore\HttpSecurity.AspNetCore.csproj" />
 	</ItemGroup>
 
+	<!-- The following Target builds  -->
+	<Target Name="BuildHashes" AfterTargets="Publish">
+		<ItemGroup>
+			<FilesToHash Include="$(PublishDir)wwwroot\**\*.js;$(PublishDir)wwwroot\**\*.css;$(PublishDir)wwwroot\**\*.json" />
+			<HashFileOutput Include="$(PublishDir)asset-file-hashes.csv" />
+		</ItemGroup>
+
+		<GetFileHash Files="@(FilesToHash)" Algorithm="SHA256" HashEncoding="base64">
+			<Output TaskParameter="Items" ItemName="FilesWithHashes" />
+		</GetFileHash>
+
+		<Message Importance="High" Text="@(FilesWithHashes->'%(Identity): %(FileHash)')" />
+
+		<WriteLinesToFile File="@(HashFileOutput)" Lines="@(FilesWithHashes->'%22%(Identity)%22,%22%(FileHash)%22')" Overwrite="true" Encoding="Unicode" />
+	</Target>
+
 </Project>
