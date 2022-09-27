@@ -20,7 +20,6 @@ env:
   buildConfiguration: 'Release'
   outputCSFB: ${{github.workspace}}\siteCSFB
   projectCSFB: 'HttpSecurity.AspNet/HttpSecurity.AspNet.csproj'
-  projectTest: 'HttpSecurity.AspNet.Test/HttpSecurity.AspNet.Test.csproj'
  
 jobs:
 
@@ -43,39 +42,6 @@ jobs:
     - name: Nothing to see here
       run: echo ""
 
-############################################################################################################
-# Run the test project. Should this fail, we don't perform any deploy action
-############################################################################################################
-  test:
-    name: Run .NET tests
-    runs-on: windows-latest
-    env:
-      config: 'Release'
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET6
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '6.0.x'
-        include-prerelease: true
-#    - name: Install dependencies
-#      run: dotnet restore --verbosity normal
-#    - name: Build
-#      run: dotnet build --configuration $config --no-restore
-#    - name: Test
-#      run: dotnet test --configuration $config --no-restore --no-build --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
-#    - name: Find lcov file path
-#      id: find-lcov-file-path
-#      shell: pwsh
-#      run: |
-#        $FilePath = (Get-ChildItem CompressedStaticFiles.Tests\TestResults\* | Select-Object -First 1 | Get-ChildItem).FullName
-#        Write-Host ::set-output name=path::$FilePath
-#    - name: Publish coverage report to coveralls.io
-#      uses: coverallsapp/github-action@master
-#      with:
-#        github-token: ${{ secrets.GITHUB_TOKEN }}
-#        path-to-lcov: ${{ steps.find-lcov-file-path.outputs.path }}
 
 ############################################################################################################
 # Store the version information
@@ -93,6 +59,8 @@ jobs:
         echo "${{ steps.get.outputs.identifier }}"
     outputs:
       identifier: ${{ steps.get.outputs.identifier }}
+
+
 ############################################################################################################
 # Store the branch information
 ############################################################################################################
@@ -109,12 +77,13 @@ jobs:
     outputs:
       identifier: ${{ steps.get.outputs.identifier }}
 
+
 ############################################################################################################
 # Build package and deploy
 ############################################################################################################
   build-and-deploy-package:
     name: Build nuget package & deploy to nuget
-    needs: [version, branch, is-on-material-blazor, test]
+    needs: [version, branch, is-on-material-blazor]
 
     runs-on: windows-latest
 
@@ -142,6 +111,7 @@ jobs:
     - name: Upload Package 🚀
       run: dotnet nuget push ${{env.outputCSFB}}\*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
       if: needs.branch.outputs.identifier != 'experimental-release-workflow' # this check is important to allow testing this workflow on a non-main branch without deploying to nuget: this critical action is not performed when not on main.
+
 
 ############################################################################################################
 # Create release
