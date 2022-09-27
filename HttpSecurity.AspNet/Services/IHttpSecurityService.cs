@@ -1,4 +1,6 @@
-﻿namespace HttpSecurity.AspNet;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace HttpSecurity.AspNet;
 
 /// <summary>
 /// Implementation of <see cref="IAlternativeFileProvider"/> for compressed files such as CSS or JS.
@@ -8,10 +10,9 @@ public interface IHttpSecurityService
     /// <summary>
     /// Returns a dictionary of security headers.
     /// </summary>
-    /// <param name="baseUri"></param>
-    /// <param name="baseDomain"></param>
+    /// <param name="context"></param>
     /// <returns></returns>
-    public Dictionary<string, string> GetSecurityHeaders();
+    public Dictionary<string, string> GetSecurityHeaders(HttpContext context);
 
 
     /// <summary>

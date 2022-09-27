@@ -1,4 +1,6 @@
-﻿namespace HttpSecurity.AspNet;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace HttpSecurity.AspNet;
 
 
 /// <summary>
@@ -35,9 +37,12 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
 
     /// <inheritdoc/>
-    public Dictionary<string, string> GetSecurityHeaders()
+    public Dictionary<string, string> GetSecurityHeaders(HttpContext context)
     {
-        return BuildSecurityHeaders(BaseUri, BaseDomain);
+        var baseUri = context.Request.Host.ToUriComponent();
+        var baseDomain = context.Request.Host.Host;
+
+        return BuildSecurityHeaders(baseUri, baseDomain);
     }
 
 
@@ -59,21 +64,6 @@ internal sealed class HttpSecurityService : IHttpSecurityService
     string IHttpSecurityService.GetCSPHashesSubsting(StaticFileExtension staticFileExtension)
     {
         return _fileHashDataset.GetCSPSubstring(staticFileExtension);
-    }
-
-
-    /// <summary>
-    /// Returns a dictionary of security headers.
-    /// </summary>
-    /// <param name="baseUri"></param>
-    /// <param name="baseDomain"></param>
-    /// <returns></returns>
-    internal Dictionary<string, string> GetSecurityHeaders(string baseUri, string baseDomain)
-    {
-        BaseUri = baseUri;
-        BaseDomain = baseDomain;
-
-        return GetSecurityHeaders();
     }
 
 

@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @inject IHttpSecurityService HttpSecurityService
+@inject IHttpContextAccessor HttpContextAccessor;
 
 <PageTitle>Index</PageTitle>
 
@@ -8,22 +9,22 @@
 
 @if (CSPHeaderValues.Any())
 {
-    <h4 style="margin-top: 24px;">@CSPKey</h4>
+    var isFirst = true;
+
+    <h4 style="padding-top: 24px !important;">@CSPKey</h4>
 
     <code>
-        @{
-            var isFirst = true;
-        }
-
         @foreach (var value in CSPHeaderValues)
         {
             if (!isFirst)
             {
                 <br />
             }
-            @(
-                value + ";"
-                )
+            
+            var displayLine = value + ";";
+
+            @displayLine
+
             isFirst = false;
         }
     </code>
@@ -31,7 +32,7 @@
 
 @foreach (var header in GeneralHeaders)
 {
-    <h4 style="margin-top: 24px;">@header.Key</h4>
+    <h4 style="padding-top: 24px !important;">@header.Key</h4>
 
     <code>@header.Value</code>
 }
@@ -45,7 +46,7 @@
     {
         base.OnInitialized();
 
-        var sh = HttpSecurityService.GetSecurityHeaders();
+        var sh = HttpSecurityService.GetSecurityHeaders(HttpContextAccessor.HttpContext);
 
         if (sh.TryGetValue(CSPKey, out var cspValue))
         {

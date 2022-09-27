@@ -31,7 +31,7 @@ public sealed class HttpSecurityMiddleware
         var baseUri = context.Request.Host.ToUriComponent();
         var baseDomain = context.Request.Host.Host;
 
-        foreach (var header in ((HttpSecurityService)service).GetSecurityHeaders(baseUri, baseDomain))
+        foreach (var header in ((HttpSecurityService)service).GetSecurityHeaders(context))
         {
             context.Response.Headers[header.Key] = header.Value;
         }
