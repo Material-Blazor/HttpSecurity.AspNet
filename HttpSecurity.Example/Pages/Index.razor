@@ -1,0 +1,57 @@
+﻿@page "/"
+
+@inject IHttpSecurityService HttpSecurityService
+
+<PageTitle>Index</PageTitle>
+
+<h1>Http Security Headers</h1>
+
+@if (CSPHeaderValues.Any())
+{
+    <h4 style="margin-top: 24px;">@CSPKey</h4>
+
+    <code>
+        @{
+            var isFirst = true;
+        }
+
+        @foreach (var value in CSPHeaderValues)
+        {
+            if (!isFirst)
+            {
+                <br />
+            }
+            @(
+                value + ";"
+                )
+            isFirst = false;
+        }
+    </code>
+}
+
+@foreach (var header in GeneralHeaders)
+{
+    <h4 style="margin-top: 24px;">@header.Key</h4>
+
+    <code>@header.Value</code>
+}
+
+@code {
+    const string CSPKey = "Content-Security-Policy";
+    List<KeyValuePair<string, string>> GeneralHeaders { get; set; } = new();
+    List<string> CSPHeaderValues { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        var sh = HttpSecurityService.GetSecurityHeaders();
+
+        if (sh.TryGetValue(CSPKey, out var cspValue))
+        {
+            CSPHeaderValues = cspValue.Split(";").Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+        }
+
+        GeneralHeaders = sh.Where(x => x.Key != CSPKey).OrderBy(x => x.Key).ToList();
+    }
+}
