@@ -10,10 +10,10 @@
 		<ProjectReference Include="..\HttpSecurity.AspNetCore\HttpSecurity.AspNetCore.csproj" />
 	</ItemGroup>
 
-	<!-- The following Target builds  -->
-	<Target Name="BuildHashes" AfterTargets="Publish">
+	<!-- The following Target can be used to build a file at publish time containing SHA256 hashes of all JS and CSS static assets under wwwroot -->
+	<!--<Target Name="BuildHashes" AfterTargets="Publish">
 		<ItemGroup>
-			<FilesToHash Include="$(PublishDir)wwwroot\**\*.js;$(PublishDir)wwwroot\**\*.css;$(PublishDir)wwwroot\**\*.json" />
+			<FilesToHash Include="$(PublishDir)wwwroot\**\*.js;$(PublishDir)wwwroot\**\*.css" />
 			<HashFileOutput Include="$(PublishDir)asset-file-hashes.csv" />
 		</ItemGroup>
 
@@ -24,6 +24,6 @@
 		<Message Importance="High" Text="@(FilesWithHashes->'%(Identity): %(FileHash)')" />
 
 		<WriteLinesToFile File="@(HashFileOutput)" Lines="@(FilesWithHashes->'%22%(Identity)%22,%22%(FileHash)%22')" Overwrite="true" Encoding="Unicode" />
-	</Target>
+	</Target>-->
 
 </Project>

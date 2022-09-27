@@ -56,7 +56,15 @@ public sealed class FileHashDataset
     /// <returns></returns>
     internal string GetHashString(string fileName)
     {
-        HashLookup ??= FileHashes.Select(x => new KeyValuePair<string, string>(x.FilePath.Split(pathSeparators)[^1], x.GetHashString())).ToDictionary(x => x.Key, x => x.Value);
+        if (HashLookup is null)
+        {
+            HashLookup = new();
+
+            foreach (var hash in FileHashes)
+            {
+                HashLookup[hash.FilePath.Split(pathSeparators)[^1]] = hash.GetHashString();
+            }
+        }
 
         HashLookup.TryGetValue(fileName, out var result);
 

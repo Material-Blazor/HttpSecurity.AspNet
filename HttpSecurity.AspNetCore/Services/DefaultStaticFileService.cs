@@ -8,11 +8,11 @@ namespace HttpSecurity.AspNetCore;
 /// <summary>
 /// The internal default implementation of <see cref="IGeneratedHashesProvider"/>, generating SHA512 hashes of all files recursively discovered in the environment's web root path.
 /// </summary>
-internal class StaticFileService : IGeneratedHashesProvider
+internal class DefaultStaticFileService : IGeneratedHashesProvider
 {
     private readonly IWebHostEnvironment _env;
 
-    public StaticFileService(IWebHostEnvironment env)
+    public DefaultStaticFileService(IWebHostEnvironment env)
     {
         _env = env;
     }

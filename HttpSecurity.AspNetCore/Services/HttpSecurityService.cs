@@ -8,7 +8,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 {
     private readonly HttpSecurityOptions _options;
     private readonly IServiceProvider _serviceProvider;
-    private readonly StaticFileService _staticFileService;
+    private readonly DefaultStaticFileService _staticFileService;
     private readonly FileHashDataset _fileHashDataset;
     private readonly string _nonceValue;
 
@@ -21,7 +21,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
 
    /// <inheritdoc/>
-    public HttpSecurityService(HttpSecurityOptions options, StaticFileService staticFileService, IServiceProvider serviceProvider)
+    public HttpSecurityService(HttpSecurityOptions options, DefaultStaticFileService staticFileService, IServiceProvider serviceProvider)
     {
         _options = options;
         _serviceProvider = serviceProvider;

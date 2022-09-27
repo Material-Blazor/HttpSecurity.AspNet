@@ -26,7 +26,7 @@ public static class HttpSecurityExtensions
 
         return 
             serviceCollection
-            .AddSingleton<StaticFileService>()
+            .AddSingleton<DefaultStaticFileService>()
             .AddScoped<IHttpSecurityService, HttpSecurityService>();
     }
 
@@ -55,8 +55,8 @@ public static class HttpSecurityExtensions
 
         return 
             serviceCollection
-            .AddSingleton<StaticFileService>()
-            .AddScoped<IHttpSecurityService>(serviceProvider => new HttpSecurityService(options, serviceProvider.GetRequiredService<StaticFileService>(), serviceProvider));
+            .AddSingleton<DefaultStaticFileService>()
+            .AddScoped<IHttpSecurityService>(serviceProvider => new HttpSecurityService(options, serviceProvider.GetRequiredService<DefaultStaticFileService>(), serviceProvider));
     }
 
 
