@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace HttpSecurity.AspNetCore;
+namespace HttpSecurity.AspNetCore.Middleware;
 
 
 /// <summary>
@@ -26,16 +26,16 @@ public sealed class HttpSecurityMiddleware
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    public async Task Invoke(HttpContext context, IHttpSecurityService service)
+    public Task Invoke(HttpContext context, IHttpSecurityService service)
     {
         var baseUri = context.Request.Host.ToUriComponent();
         var baseDomain = context.Request.Host.Host;
-        
+
         foreach (var header in ((HttpSecurityService)service).GetSecurityHeaders(baseUri, baseDomain))
         {
             context.Response.Headers[header.Key] = header.Value;
         }
 
-        await _next(context);
+        return _next(context);
     }
 }

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using HttpSecurity.AspNetCore.Middleware;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace HttpSecurity.AspNetCore;
+namespace HttpSecurity.AspNetCore.Extensions;
 
 
 /// <summary>
@@ -22,7 +24,10 @@ public static class HttpSecurityExtensions
             throw new ArgumentNullException(nameof(serviceCollection));
         }
 
-        return serviceCollection.AddScoped<IHttpSecurityService, HttpSecurityService>();
+        return 
+            serviceCollection
+            .AddSingleton<StaticFileService>()
+            .AddScoped<IHttpSecurityService, HttpSecurityService>();
     }
 
 
@@ -48,7 +53,10 @@ public static class HttpSecurityExtensions
 
         configureOptions.Invoke(options);
 
-        return serviceCollection.AddScoped<IHttpSecurityService>(serviceProvider => new HttpSecurityService(options));
+        return 
+            serviceCollection
+            .AddSingleton<StaticFileService>()
+            .AddScoped<IHttpSecurityService>(serviceProvider => new HttpSecurityService(options, serviceProvider.GetRequiredService<StaticFileService>()));
     }
 
 
@@ -86,5 +94,23 @@ public static class HttpSecurityExtensions
         }
 
         return app.UseMiddleware<HttpSecurityMiddleware>(Options.Create(options));
+    }
+
+
+    /// <summary>
+    /// Returns a string file extension.
+    /// </summary>
+    /// <param name="staticFileExtension"></param>
+    /// <returns></returns>
+    internal static bool MatchesExtension(this StaticFileExtension staticFileExtension, string path)
+    {
+        var extension = staticFileExtension switch
+        {
+            StaticFileExtension.CSS => ".css",
+            StaticFileExtension.JS => ".js",
+            _ => throw new NotSupportedException()
+        };
+
+        return extension == Path.GetExtension(path).ToLower();
     }
 }

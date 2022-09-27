@@ -12,9 +12,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
-    <link nonce="@HttpSecurityService.GetNonce()" rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
-    <link nonce="@HttpSecurityService.GetNonce()" href="css/site.css" rel="stylesheet" />
-    <link nonce="@HttpSecurityService.GetNonce()" href="HttpSecurity.Example.styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" integrity="@HttpSecurityService.GetFileHashString("bootstrap.min.css")" />
+    <link rel="stylesheet" href="css/site.css" integrity="@HttpSecurityService.GetFileHashString("site.css")" />
+    <link nonce="@HttpSecurityService.GetNonce()" rel="stylesheet" href="HttpSecurity.Example.styles.css" integrity="@HttpSecurityService.GetFileHashString("HttpSecurity.Example.styles.css")" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
@@ -31,6 +31,6 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script nonce="@HttpSecurityService.GetNonce()" src="_framework/blazor.server.js"></script>
+    <script nonce="@HttpSecurityService.GetNonce()" src="_framework/blazor.server.js" integrity="@HttpSecurityService.GetFileHashString("blazor.server.js")"></script>
 </body>
 </html>

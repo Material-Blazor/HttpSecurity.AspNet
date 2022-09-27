@@ -1,7 +1,12 @@
 using HttpSecurity.AspNetCore;
+using HttpSecurity.AspNetCore.Extensions;
 using HttpSecurity.Example.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+string[] files = Directory.GetFiles(builder.Environment.WebRootPath,
+            "*.js",
+            SearchOption.AllDirectories);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -28,7 +33,7 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddObjectSrcCSP(o => o.AddNone())
         .AddReportUriCSP(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
         .AddScriptSrcCSP(o => o.AddSelf().AddNonce().AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddUriIf((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js", () => builder.Environment.IsDevelopment()).AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js"))
-        .AddStyleSrcCSP(o => o.AddSelf().AddUnsafeInline().AddUnsafeHashes().AddReportSample())
+        .AddStyleSrcCSP(o => o.AddSelfIf(() => false).AddUnsafeInline().AddUnsafeHashes().AddReportSample())
         .AddUpgradeInsecureRequestsCSP()
         .AddWorkerSrcCSP(o => o.AddSelf())
 
@@ -42,8 +47,7 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddXContentTypeOptionsNoSniff()
         .AddXFrameOptionsDirective(XFrameOptionsDirective.Deny)
         .AddXXssProtectionDirective(XXssProtectionDirective.OneModeBlock)
-        .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None)
-        ;
+        .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None);
 });
 
 var app = builder.Build();

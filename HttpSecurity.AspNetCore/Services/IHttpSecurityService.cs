@@ -19,4 +19,12 @@ public interface IHttpSecurityService
     /// </summary>
     /// <returns></returns>
     public string GetNonce();
+
+
+    /// <summary>
+    /// Returns a hash string for CSP use.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    public string GetFileHashString(string fileName);
 }

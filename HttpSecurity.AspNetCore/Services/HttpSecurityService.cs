@@ -7,17 +7,22 @@
 internal sealed class HttpSecurityService : IHttpSecurityService
 {
     private readonly HttpSecurityOptions _options;
+    private readonly FileHashDataset _fileHashDataset;
+    private readonly string _nonceValue;
 
     private string BaseUri { get; set; } = "";
     private string BaseDomain { get; set; } = "";
-    private string NonceValue { get; set; }
 
 
     /// <inheritdoc/>
-    public HttpSecurityService(HttpSecurityOptions options)
+    public HttpSecurityService(HttpSecurityOptions options, StaticFileService staticFileService)
     {
         _options = options;
-        NonceValue = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        _fileHashDataset = staticFileService.GetFileHashDataset();
+        _nonceValue = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+
+        var asdf = _fileHashDataset.GetCSPSubstring(StaticFileExtension.CSS);
+        var qwer = _fileHashDataset.GetHashString("bootstrap.min.css");
     }
 
 
@@ -31,8 +36,19 @@ internal sealed class HttpSecurityService : IHttpSecurityService
     /// <inheritdoc/>
     public string GetNonce()
     {
-        return NonceValue;
+        return _nonceValue;
     }
+
+
+    /// Returns a hash string for CSP use.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    public string GetFileHashString(string fileName)
+    {
+        return _fileHashDataset.GetHashString(fileName);
+    }
+
 
 
     /// <summary>
@@ -60,7 +76,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
     {
         Dictionary<string, string> headers = new();
 
-        string csp = _options.GetContentSecurityPolicy(NonceValue, baseUri, baseDomain);
+        string csp = _options.GetContentSecurityPolicy(_nonceValue, baseUri, baseDomain);
 
         if (!string.IsNullOrWhiteSpace(csp))
         {
