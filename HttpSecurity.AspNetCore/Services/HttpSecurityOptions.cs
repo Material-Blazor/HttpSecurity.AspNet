@@ -82,11 +82,27 @@ public sealed partial class HttpSecurityOptions
 
 
     /// <summary>
+    /// An optional <see cref="IGeneratedHashesProvider"/> builder. If null, <see cref="IHttpSecurityService.DefaultGeneratedHashesProvider"/>
+    /// </summary>
+    internal Func<IServiceProvider, IGeneratedHashesProvider>? GeneratedHashesProviderBuilder { get; set; } = null;
+
+
+    /// <summary>
+    /// An optional <see cref="IGeneratedHashesProvider"/>. If null, <see cref="IHttpSecurityService.DefaultGeneratedHashesProvider"/> is used.
+    /// </summary>
+    public HttpSecurityOptions SetGeneratedHashesProvider(Func<IServiceProvider, IGeneratedHashesProvider> func)
+    {
+        GeneratedHashesProviderBuilder = func;
+        return this;
+    }
+
+
+    /// <summary>
     /// Returns the content security policy string.
     /// </summary>
-    internal string GetContentSecurityPolicy(string nonceValue, string baseUri, string baseDomain)
+    internal string GetContentSecurityPolicy(IHttpSecurityService httpSecurityService, string nonceValue, string baseUri, string baseDomain)
     {
-        return string.Join(' ', Policies.Select(x => x.GetPolicyValue(nonceValue, baseUri, baseDomain)).OrderBy(x => x));
+        return string.Join(' ', Policies.Select(x => x.GetPolicyValue(httpSecurityService, nonceValue, baseUri, baseDomain)).OrderBy(x => x));
     }
 
 

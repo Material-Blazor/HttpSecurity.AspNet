@@ -1,5 +1,4 @@
 ﻿using HttpSecurity.AspNetCore.Extensions;
-using Microsoft.AspNetCore.Builder;
 
 namespace HttpSecurity.AspNetCore;
 
@@ -9,6 +8,12 @@ namespace HttpSecurity.AspNetCore;
 public sealed class FileHashDataset
 {
     private static char[] pathSeparators = { '/', '\\' };
+
+
+    /// <summary>
+    /// Internally generated unique id.
+    /// </summary>
+    internal readonly Guid Id = Guid.NewGuid();
 
 
     /// <summary>
@@ -34,10 +39,9 @@ public sealed class FileHashDataset
 
             foreach (var hash in FileHashes.Where(x => staticFileExtension.MatchesExtension(Path.GetExtension(x.FilePath).ToLower())))
             {
-                result += "'" + hash.HashAlgorithm.ToString().ToLower() + "-" + hash.HashValue + "' ";
+                result += " '" + hash.HashAlgorithm.ToString().ToLower() + "-" + hash.HashValue + "'";
             }
 
-            result = result.Trim();
             CspSubstingLookup.Add(staticFileExtension, result);
         }
 

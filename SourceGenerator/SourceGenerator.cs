@@ -211,9 +211,9 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "/// <inheritdoc />");
-        sb.AppendLinesIndented(1, $"public override string GetPolicyValue(string nonceValue, string baseUri, string baseDomain)");
+        sb.AppendLinesIndented(1, $"public override string GetPolicyValue(IHttpSecurityService httpSecurityService, string nonceValue, string baseUri, string baseDomain)");
         sb.AppendLinesIndented(1, "{");
-        sb.AppendLinesIndented(2, "return Options.PolicyValueBuilders.Any() ? $\"{PolicyName} {string.Join(' ', Options.PolicyValueBuilders.Select(x => x.Invoke(nonceValue, baseUri, baseDomain)))};\" : $\"{PolicyName};\";");
+        sb.AppendLinesIndented(2, "return Options.PolicyValueBuilders.Any() ? $\"{PolicyName} {string.Join(' ', Options.PolicyValueBuilders.Select(x => x.Invoke(nonceValue, baseUri, baseDomain)))}{Options.GetCSPSubstring(httpSecurityService)};\" : $\"{PolicyName};\";");
         sb.AppendLinesIndented(1, "}");
 
         return true;
@@ -354,13 +354,12 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <summary>");
         sb.AppendLinesIndented(1, $"/// Adds a hash value to the policy.");
         sb.AppendLinesIndented(1, "/// </summary>");
+        sb.AppendLinesIndented(1, $"/// <param name=\"hashAlgorithm\"></param>");
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddHashValue(HashAlgorithm hashAlgorithm, string hashValue)");
         sb.AppendLinesIndented(1, "{");
         sb.AppendLinesIndented(2, "return AddValue($\"'{hashAlgorithm.ToString().ToLower()}-{hashValue}'\");");
         sb.AppendLinesIndented(1, "}");
-
-
 
         sb.AppendLinesIndented(1, "");
         sb.AppendLinesIndented(1, "");
@@ -368,11 +367,50 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(1, "/// <summary>");
         sb.AppendLinesIndented(1, $"/// Conditionally adds a hash value to the policy.");
         sb.AppendLinesIndented(1, "/// </summary>");
+        sb.AppendLinesIndented(1, $"/// <param name=\"hashAlgorithm\"></param>");
         sb.AppendLinesIndented(1, $"/// <param name=\"conditionalFunc\">The conditional function delegate determining whether to add the nonce to the policy</param>");
         sb.AppendLinesIndented(1, "/// <returns></returns>");
         sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddHashValueIf(HashAlgorithm hashAlgorithm, string hashValue, Func<bool> conditionalFunc)");
         sb.AppendLinesIndented(1, "{");
         sb.AppendLinesIndented(2, $"return conditionalFunc.Invoke() ? AddHashValue(hashAlgorithm, hashValue) : this;");
+        sb.AppendLinesIndented(1, "}");
+
+        sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, "");
+
+        sb.AppendLinesIndented(1, "/// <summary>");
+        sb.AppendLinesIndented(1, "/// A list of &lt;see cref=\"StaticFileExtension\" /&gt;s for which hashes are to be added to the CSP.");
+        sb.AppendLinesIndented(1, "/// </summary>");
+        sb.AppendLinesIndented(1, "internal List<StaticFileExtension> StaticFileExtensions = new();");
+
+        sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, "");
+
+        sb.AppendLinesIndented(1, "/// <summary>");
+        sb.AppendLinesIndented(1, $"/// Conditionally adds a hash value to the policy.");
+        sb.AppendLinesIndented(1, "/// </summary>");
+        sb.AppendLinesIndented(1, $"/// <param name=\"staticFileExtension\"></param>");
+        sb.AppendLinesIndented(1, "/// <returns></returns>");
+        sb.AppendLinesIndented(1, $"public {GetClassTypeName(classSymbol)} AddGeneratedHashValues(StaticFileExtension staticFileExtension)");
+        sb.AppendLinesIndented(1, "{");
+        sb.AppendLinesIndented(2, "StaticFileExtensions.Add(staticFileExtension);");
+        sb.AppendLinesIndented(2, "return this;");
+        sb.AppendLinesIndented(1, "}");
+
+        sb.AppendLinesIndented(1, "");
+        sb.AppendLinesIndented(1, "");
+
+        sb.AppendLinesIndented(1, "/// <inheritdoc />");
+        sb.AppendLinesIndented(1, $"internal override string GetCSPSubstring(IHttpSecurityService httpSecurityService)");
+        sb.AppendLinesIndented(1, "{");
+        sb.AppendLinesIndented(2, "var result = \"\";");
+        sb.AppendLinesIndented(2, "");
+        sb.AppendLinesIndented(2, "foreach (var extension in StaticFileExtensions)");
+        sb.AppendLinesIndented(2, "{");
+        sb.AppendLinesIndented(3, "result += httpSecurityService.GetCSPHashesSubsting(extension);");
+        sb.AppendLinesIndented(2, "}");
+        sb.AppendLinesIndented(2, "");
+        sb.AppendLinesIndented(2, "return result;");
         sb.AppendLinesIndented(1, "}");
 
         return true;

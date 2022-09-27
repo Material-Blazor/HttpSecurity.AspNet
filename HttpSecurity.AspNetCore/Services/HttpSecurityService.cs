@@ -7,6 +7,8 @@
 internal sealed class HttpSecurityService : IHttpSecurityService
 {
     private readonly HttpSecurityOptions _options;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly StaticFileService _staticFileService;
     private readonly FileHashDataset _fileHashDataset;
     private readonly string _nonceValue;
 
@@ -15,14 +17,20 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
 
     /// <inheritdoc/>
-    public HttpSecurityService(HttpSecurityOptions options, StaticFileService staticFileService)
+    public IGeneratedHashesProvider DefaultGeneratedHashesProvider => _staticFileService;
+
+
+   /// <inheritdoc/>
+    public HttpSecurityService(HttpSecurityOptions options, StaticFileService staticFileService, IServiceProvider serviceProvider)
     {
         _options = options;
-        _fileHashDataset = staticFileService.GetFileHashDataset();
-        _nonceValue = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        _serviceProvider = serviceProvider;
+        _staticFileService = staticFileService;
 
-        var asdf = _fileHashDataset.GetCSPSubstring(StaticFileExtension.CSS);
-        var qwer = _fileHashDataset.GetHashString("bootstrap.min.css");
+        var asdf = options.GeneratedHashesProviderBuilder?.Invoke(_serviceProvider);
+
+        _fileHashDataset = (options.GeneratedHashesProviderBuilder?.Invoke(_serviceProvider) ?? _staticFileService).GetFileHashDataset(_serviceProvider);
+        _nonceValue = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
     }
 
 
@@ -40,15 +48,18 @@ internal sealed class HttpSecurityService : IHttpSecurityService
     }
 
 
-    /// Returns a hash string for CSP use.
-    /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public string GetFileHashString(string fileName)
     {
         return _fileHashDataset.GetHashString(fileName);
     }
 
+
+    /// <inheritdoc/>
+    string IHttpSecurityService.GetCSPHashesSubsting(StaticFileExtension staticFileExtension)
+    {
+        return _fileHashDataset.GetCSPSubstring(staticFileExtension);
+    }
 
 
     /// <summary>
@@ -76,7 +87,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
     {
         Dictionary<string, string> headers = new();
 
-        string csp = _options.GetContentSecurityPolicy(_nonceValue, baseUri, baseDomain);
+        string csp = _options.GetContentSecurityPolicy(this, _nonceValue, baseUri, baseDomain);
 
         if (!string.IsNullOrWhiteSpace(csp))
         {

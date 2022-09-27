@@ -29,6 +29,6 @@ public sealed class FileHash
     /// <returns></returns>
     public string GetHashString()
     {
-        return HashAlgorithm.ToString().ToLower() + "-" + HashValue; 
+        return HashAlgorithm.ToString().ToLower() + "-" + HashValue;
     }
 }

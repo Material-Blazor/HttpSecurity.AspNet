@@ -32,8 +32,8 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddPrefetchSrcCSP(o => o.AddSelf())
         .AddObjectSrcCSP(o => o.AddNone())
         .AddReportUriCSP(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
-        .AddScriptSrcCSP(o => o.AddSelf().AddNonce().AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddUriIf((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js", () => builder.Environment.IsDevelopment()).AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js"))
-        .AddStyleSrcCSP(o => o.AddSelfIf(() => false).AddUnsafeInline().AddUnsafeHashes().AddReportSample())
+        .AddScriptSrcCSP(o => o.AddSelf().AddNonce().AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddUriIf((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js", () => builder.Environment.IsDevelopment()).AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js").AddGeneratedHashValues(StaticFileExtension.JS))
+        .AddStyleSrcCSP(o => o.AddSelf().AddUnsafeInline().AddUnsafeHashes().AddReportSample())
         .AddUpgradeInsecureRequestsCSP()
         .AddWorkerSrcCSP(o => o.AddSelf())
 
