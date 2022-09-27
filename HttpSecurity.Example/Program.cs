@@ -8,6 +8,7 @@ string[] files = Directory.GetFiles(builder.Environment.WebRootPath,
             SearchOption.AllDirectories);
 
 // Add services to the container.
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
@@ -20,7 +21,8 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddBlockAllMixedContentCSP()
         .AddChildSrcCSP(o => o.AddSelf())
         .AddConnectSrcCSP(o => o.AddSelf().AddUri((baseUri, baseDomain) => $"wss://{baseDomain}:*"))
-        .AddDefaultSrcCSP(o => o.AddSelf().AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline())
+        // The generated hashes do nothing here, and we include it here only to show that generated hash values can be added to policies - script-src would generally be the policy where you use this technique.
+        .AddDefaultSrcCSP(o => o.AddSelf().AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddGeneratedHashValues(StaticFileExtension.CSS))
         .AddFontSrcCSP(o => o.AddSelf())
         .AddFrameAncestorsCSP(o => o.AddNone())
         .AddFrameSrcCSP(o => o.AddSelf())
