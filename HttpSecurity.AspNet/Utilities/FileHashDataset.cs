@@ -5,7 +5,7 @@
 /// </summary>
 public sealed class FileHashDataset
 {
-    private static char[] pathSeparators = { '/', '\\' };
+    private static readonly char[] pathSeparators = { '/', '\\' };
 
 
     /// <summary>
