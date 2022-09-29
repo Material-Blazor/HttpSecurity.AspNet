@@ -29,8 +29,6 @@ internal sealed class HttpSecurityService : IHttpSecurityService
         _serviceProvider = serviceProvider;
         _staticFileService = staticFileService;
 
-        var asdf = options.GeneratedHashesProviderBuilder?.Invoke(_serviceProvider);
-
         _fileHashDataset = (options.GeneratedHashesProviderBuilder?.Invoke(_serviceProvider) ?? _staticFileService).GetFileHashDataset(_serviceProvider);
         _nonceValue = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
     }

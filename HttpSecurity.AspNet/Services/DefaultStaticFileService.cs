@@ -46,6 +46,9 @@ internal class DefaultStaticFileService : IGeneratedHashesProvider
 
     private static string ComputeSha512Hash(string path)
     {
-        return Convert.ToBase64String(SHA512.Create().ComputeHash(Encoding.UTF8.GetBytes(File.ReadAllText(path))));
+        using var sha512 = SHA512.Create();
+        using var stream = File.OpenRead(path);
+
+        return Convert.ToBase64String(sha512.ComputeHash(stream));
     }
 }
