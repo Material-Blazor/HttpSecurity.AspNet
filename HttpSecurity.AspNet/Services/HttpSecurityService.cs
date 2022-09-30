@@ -40,7 +40,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
         var baseUri = context.Request.Host.ToUriComponent();
         var baseDomain = context.Request.Host.Host;
 
-        return BuildSecurityHeaders(baseUri, baseDomain);
+        return BuildSecurityHeaders(context, baseUri, baseDomain);
     }
 
 
@@ -71,7 +71,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
     /// <param name="baseUri"></param>
     /// <param name="baseDomain"></param>
     /// <returns></returns>
-    private Dictionary<string, string> BuildSecurityHeaders(string baseUri, string baseDomain)
+    private Dictionary<string, string> BuildSecurityHeaders(HttpContext context, string baseUri, string baseDomain)
     {
         Dictionary<string, string> headers = new();
 
@@ -80,6 +80,11 @@ internal sealed class HttpSecurityService : IHttpSecurityService
         if (!string.IsNullOrWhiteSpace(csp))
         {
             headers["Content-Security-Policy"] = csp;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_options.AccessControlAllowOrigin))
+        {
+            headers["Access-Control-Allow-Origin"] = _options.AccessControlAllowOrigin;
         }
 
         if (!string.IsNullOrWhiteSpace(_options.CacheControl))
@@ -94,7 +99,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
         if (_options.ReferrerPolicyDirective is not null)
         {
-            headers["Referrer-Policy"] = ((ReferrerPolicyDirective)_options.ReferrerPolicyDirective) switch
+            headers["Referrer-Policy"] = _options.ReferrerPolicyDirective switch
             {
                 ReferrerPolicyDirective.NoReferrer => "no-referrer",
                 ReferrerPolicyDirective.NoReferrerWhenDowngrade => "no-referrer-when-downgrade",
@@ -135,7 +140,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
         if (_options.XPermittedCrossDomainPoliciesDirective is not null)
         {
-            headers["X-Permitted-Cross-Domain-Policies"] = ((XPermittedCrossDomainPoliciesDirective)_options.XPermittedCrossDomainPoliciesDirective) switch
+            headers["X-Permitted-Cross-Domain-Policies"] = _options.XPermittedCrossDomainPoliciesDirective switch
             {
                 XPermittedCrossDomainPoliciesDirective.All => "all",
                 XPermittedCrossDomainPoliciesDirective.ByContentOnly => "by-content-only",

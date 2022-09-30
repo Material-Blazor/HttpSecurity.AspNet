@@ -12,6 +12,12 @@ public sealed partial class HttpSecurityOptions
     /// <summary>
     /// The requested directive.
     /// </summary>
+    internal string AccessControlAllowOrigin { get; private set; } = "";
+
+
+    /// <summary>
+    /// The requested directive.
+    /// </summary>
     internal string CacheControl { get; private set; } = string.Empty;
 
 
@@ -103,6 +109,28 @@ public sealed partial class HttpSecurityOptions
     internal string GetContentSecurityPolicy(IHttpSecurityService httpSecurityService, string nonceValue, string baseUri, string baseDomain)
     {
         return string.Join(' ', Policies.Select(x => x.GetPolicyValue(httpSecurityService, nonceValue, baseUri, baseDomain)).OrderBy(x => x));
+    }
+
+
+    /// <summary>
+    /// Adds an Access-Control-Allow-Origin directive with <c>*</c> value indicating allowing all origins.
+    /// </summary>
+    /// <returns></returns>
+    public HttpSecurityOptions AddAccessControlAllowOriginAll()
+    {
+        AccessControlAllowOrigin = "*";
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds an Access-Control-Allow-Origin directive with the supplied value.
+    /// </summary>
+    /// <returns></returns>
+    public HttpSecurityOptions AddAccessControlAllowOriginSingle(string origin)
+    {
+        AccessControlAllowOrigin = origin;
+        return this;
     }
 
 
