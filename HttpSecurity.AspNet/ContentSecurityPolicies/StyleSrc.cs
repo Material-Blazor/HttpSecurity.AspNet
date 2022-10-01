@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// media-src policy.
+/// style-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class MediaSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class StyleSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// media-src policy.
+/// style-src policy.
 /// </summary>
-[ContentSecurityPolicy("media-src")]
-public sealed partial class MediaSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("style-src")]
+public sealed partial class StyleSrc : ContentSecurityPolicyBase
 {
 }

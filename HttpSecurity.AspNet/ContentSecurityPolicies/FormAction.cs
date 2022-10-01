@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// prefetch-src policy.
+/// form-action policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class PrefetchSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class FormActionOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// prefetch-src policy.
+/// form-action policy.
 /// </summary>
-[ContentSecurityPolicy("prefetch-src")]
-public sealed partial class PrefetchSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("form-action")]
+public sealed partial class FormAction : ContentSecurityPolicyBase
 {
 }

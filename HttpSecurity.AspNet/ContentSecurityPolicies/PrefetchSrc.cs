@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// worker-src policy.
+/// prefetch-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class WorkerSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class PrefetchSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// worker-src policy.
+/// prefetch-src policy.
 /// </summary>
-[ContentSecurityPolicy("worker-src")]
-public sealed partial class WorkerSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("prefetch-src")]
+public sealed partial class PrefetchSrc : ContentSecurityPolicyBase
 {
 }

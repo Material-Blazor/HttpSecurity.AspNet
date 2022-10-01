@@ -5,7 +5,7 @@
 /// upgrade-insecure-requests policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
-public sealed partial class UpgradeInsecureRequestsCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class UpgradeInsecureRequestsOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
@@ -14,6 +14,6 @@ public sealed partial class UpgradeInsecureRequestsCSPOptions : ContentSecurityP
 /// upgrade-insecure-requests policy.
 /// </summary>
 [ContentSecurityPolicy("upgrade-insecure-requests")]
-public sealed partial class UpgradeInsecureRequestsCSP : ContentSecurityPolicyBase
+public sealed partial class UpgradeInsecureRequests : ContentSecurityPolicyBase
 {
 }

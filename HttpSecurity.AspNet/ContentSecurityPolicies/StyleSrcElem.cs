@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// style-src-attr policy.
+/// style-src-elem policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class StyleSrcAttrCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class StyleSrcElemOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// style-src-attr policy.
+/// style-src-elem policy.
 /// </summary>
-[ContentSecurityPolicy("style-src-attr")]
-public sealed partial class StyleSrcAttrCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("style-src-elem")]
+public sealed partial class StyleSrcElem : ContentSecurityPolicyBase
 {
 }

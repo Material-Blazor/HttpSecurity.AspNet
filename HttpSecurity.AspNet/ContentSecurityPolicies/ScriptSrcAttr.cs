@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// script-src-elem policy.
+/// script-src-attr policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class ScriptSrcElemCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class ScriptSrcAttrOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// script-src-elem policy.
+/// script-src-attr policy.
 /// </summary>
-[ContentSecurityPolicy("script-src-elem")]
-public sealed partial class ScriptSrcElemCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("script-src-attr")]
+public sealed partial class ScriptSrcAttr : ContentSecurityPolicyBase
 {
 }

@@ -6,7 +6,7 @@
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddScript]
-public sealed partial class RequireTrustedTypesForCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class RequireTrustedTypesForOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
@@ -15,6 +15,6 @@ public sealed partial class RequireTrustedTypesForCSPOptions : ContentSecurityPo
 /// require-trusted-types-for policy.
 /// </summary>
 [ContentSecurityPolicy("require-trusted-types-for")]
-public sealed partial class RequireTrustedTypesForCSP : ContentSecurityPolicyBase
+public sealed partial class RequireTrustedTypesFor : ContentSecurityPolicyBase
 {
 }

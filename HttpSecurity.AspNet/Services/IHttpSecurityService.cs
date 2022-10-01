@@ -12,7 +12,15 @@ public interface IHttpSecurityService
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    public Dictionary<string, string> GetSecurityHeaders(HttpContext context);
+    public List<KeyValuePair<string, string>> GetSecurityHeaders(HttpContext context);
+
+
+    /// <summary>
+    /// Returns a dictionary of security headers to be applied with the <see cref="HttpContext.Response.OnStarting"/> method.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public List<KeyValuePair<string, string>> GetOnStartingSecurityHeaders(HttpContext context);
 
 
     /// <summary>

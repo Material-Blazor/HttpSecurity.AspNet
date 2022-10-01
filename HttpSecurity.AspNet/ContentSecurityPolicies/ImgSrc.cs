@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// script-src policy.
+/// img-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class ScriptSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class ImgSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// script-src policy.
+/// img-src policy.
 /// </summary>
-[ContentSecurityPolicy("script-src")]
-public sealed partial class ScriptSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("img-src")]
+public sealed partial class ImgSrc : ContentSecurityPolicyBase
 {
 }

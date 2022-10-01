@@ -8,7 +8,7 @@
 [AddAllowDuplicates]
 [AddNone]
 [AddPolicyName]
-public sealed partial class TrustedTypesCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class TrustedTypesOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
@@ -17,6 +17,6 @@ public sealed partial class TrustedTypesCSPOptions : ContentSecurityPolicyOption
 /// trusted-types policy.
 /// </summary>
 [ContentSecurityPolicy("trusted-types")]
-public sealed partial class TrustedTypesCSP : ContentSecurityPolicyBase
+public sealed partial class TrustedTypes : ContentSecurityPolicyBase
 {
 }

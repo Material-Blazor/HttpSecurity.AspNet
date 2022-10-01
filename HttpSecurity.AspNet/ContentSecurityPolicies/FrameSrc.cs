@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// connect-src policy.
+/// frame-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class ConnectSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class FrameSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// connect-src policy.
+/// frame-src policy.
 /// </summary>
-[ContentSecurityPolicy("connect-src")]
-public sealed partial class ConnectSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("frame-src")]
+public sealed partial class FrameSrc : ContentSecurityPolicyBase
 {
 }

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
-namespace HttpSecurity.AspNet.Middleware;
+namespace HttpSecurity.AspNet;
 
 
 /// <summary>
@@ -10,13 +11,11 @@ namespace HttpSecurity.AspNet.Middleware;
 public sealed class HttpSecurityMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IOptions<HttpSecurityOptions> _options;
 
 
-    public HttpSecurityMiddleware(RequestDelegate next, IOptions<HttpSecurityOptions> options)
+    public HttpSecurityMiddleware(RequestDelegate next)
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
 
@@ -34,6 +33,21 @@ public sealed class HttpSecurityMiddleware
         foreach (var header in ((HttpSecurityService)service).GetSecurityHeaders(context))
         {
             context.Response.Headers[header.Key] = header.Value;
+        }
+
+        var osHeaders = ((HttpSecurityService)service).GetOnStartingSecurityHeaders(context);
+
+        if (osHeaders.Any())
+        {
+            context.Response.OnStarting(() =>
+            {
+                foreach (var osh in osHeaders)
+                {
+                    context.Response.Headers[osh.Key] = osh.Value;
+                }
+
+                return Task.FromResult(0);
+            });
         }
 
         return _next(context);
