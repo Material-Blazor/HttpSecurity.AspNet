@@ -16,6 +16,14 @@ public interface IHttpSecurityService
 
 
     /// <summary>
+    /// Returns a dictionary of security headers to be applied with the <see cref="HttpContext.Response.OnStarting"/> method.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public List<KeyValuePair<string, string>> GetOnStartingSecurityHeaders(HttpContext context);
+
+
+    /// <summary>
     /// Returns the default <see cref="IGeneratedHashesProvider"/>.
     /// </summary>
     /// <returns></returns>

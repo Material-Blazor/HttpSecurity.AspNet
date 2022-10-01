@@ -30,16 +30,34 @@
     </code>
 }
 
-@foreach (var header in GeneralHeaders)
+@if (GeneralHeaders.Any())
 {
-    <h4 style="padding-top: 24px !important;">@header.Key</h4>
+    <h4 style="padding-top: 24px !important;">General Headers</h4>
 
-    <code>@header.Value</code>
+    foreach (var header in GeneralHeaders)
+    {
+        <h6 style="padding-top: 24px !important;">@header.Key</h6>
+
+        <code>@header.Value</code>
+    }
+}
+
+@if (OnStartingHeaders.Any())
+{
+    <h4 style="padding-top: 24px !important;">Headers applied with HttpContext.Response.OnStarting()</h4>
+
+    foreach (var header in OnStartingHeaders)
+    {
+        <h6 style="padding-top: 24px !important;">@header.Key</h6>
+
+        <code>@header.Value</code>
+    }
 }
 
 @code {
     const string CSPKey = "Content-Security-Policy";
     List<KeyValuePair<string, string>> GeneralHeaders { get; set; } = new();
+    List<KeyValuePair<string, string>> OnStartingHeaders { get; set; } = new();
     List<string> CSPHeaderValues { get; set; } = new();
 
     protected override void OnInitialized()
@@ -53,5 +71,7 @@
         CSPHeaderValues = csp.Value.Split(";").Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
         GeneralHeaders = sh.Where(x => x.Key != CSPKey).OrderBy(x => x.Key).ToList();
+        
+        OnStartingHeaders = HttpSecurityService.GetOnStartingSecurityHeaders(HttpContextAccessor.HttpContext!).OrderBy(x => x.Key).ToList();
     }
 }

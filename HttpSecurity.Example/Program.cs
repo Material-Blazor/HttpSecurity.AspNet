@@ -63,8 +63,6 @@ builder.Services.AddHttpsSecurityHeaders(options =>
                 .AddWorkerSrc(o => o.AddSelf());
         })
         .AddAccessControlAllowOriginSingle("a.com")
-        .AddCacheControl("public, max-age=86400")
-        .AddExpires("0")
         .AddReferrerPolicy(ReferrerPolicyDirective.NoReferrer)
         .AddPermissionsPolicy("accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()")
         .AddStrictTransportSecurity(31536000, true)
@@ -73,6 +71,12 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         .AddXFrameOptionsDirective(XFrameOptionsDirective.Deny)
         .AddXXssProtectionDirective(XXssProtectionDirective.OneModeBlock)
         .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None);
+},
+onStartingOptions =>
+{
+    onStartingOptions
+        .AddCacheControl("public, max-age=86400")
+        .AddExpires("0");
 });
 
 var app = builder.Build();

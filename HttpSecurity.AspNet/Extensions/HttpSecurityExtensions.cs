@@ -37,24 +37,33 @@ public static class HttpSecurityExtensions
     /// <returns></returns>
     public static IServiceCollection AddHttpsSecurityHeaders(this IServiceCollection serviceCollection, Action<HttpSecurityOptions> configureOptions)
     {
-        if (serviceCollection == null)
-        {
-            throw new ArgumentNullException(nameof(serviceCollection));
-        }
+        return AddHttpsSecurityHeaders(serviceCollection, configureOptions, _ => { });
+    }
 
-        if (configureOptions == null)
-        {
-            throw new ArgumentNullException(nameof(configureOptions));
-        }
+
+    /// <summary>
+    /// Adds the http security headers service as a scoped service.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configureOptions"></param>
+    /// <param name="configureOnStartingOptions"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddHttpsSecurityHeaders(this IServiceCollection serviceCollection, Action<HttpSecurityOptions> configureOptions, Action<HttpSecurityOptions> configureOnStartingOptions)
+    {
+        ArgumentNullException.ThrowIfNull(serviceCollection);
+        ArgumentNullException.ThrowIfNull(configureOptions);
+        ArgumentNullException.ThrowIfNull(configureOnStartingOptions);
 
         HttpSecurityOptions options = new();
+        HttpSecurityOptions onStartingOptions = new();
 
         configureOptions.Invoke(options);
+        configureOnStartingOptions.Invoke(onStartingOptions);
 
-        return 
+        return
             serviceCollection
             .AddSingleton<DefaultStaticFileService>()
-            .AddScoped<IHttpSecurityService>(serviceProvider => new HttpSecurityService(options, serviceProvider.GetRequiredService<DefaultStaticFileService>(), serviceProvider));
+            .AddScoped<IHttpSecurityService>(serviceProvider => new HttpSecurityService(options, onStartingOptions, serviceProvider.GetRequiredService<DefaultStaticFileService>(), serviceProvider));
     }
 
 

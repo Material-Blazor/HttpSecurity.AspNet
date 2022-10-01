@@ -9,6 +9,7 @@ namespace HttpSecurity.AspNet;
 internal sealed class HttpSecurityService : IHttpSecurityService
 {
     private readonly HttpSecurityOptions _options;
+    private readonly HttpSecurityOptions _onStartingOptions;
     private readonly IServiceProvider _serviceProvider;
     private readonly DefaultStaticFileService _staticFileService;
     private readonly FileHashDataset _fileHashDataset;
@@ -20,9 +21,10 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
 
    /// <inheritdoc/>
-    public HttpSecurityService(HttpSecurityOptions options, DefaultStaticFileService staticFileService, IServiceProvider serviceProvider)
+    public HttpSecurityService(HttpSecurityOptions options, HttpSecurityOptions onStartingOptions, DefaultStaticFileService staticFileService, IServiceProvider serviceProvider)
     {
         _options = options;
+        _onStartingOptions = onStartingOptions;
         _serviceProvider = serviceProvider;
         _staticFileService = staticFileService;
 
@@ -38,6 +40,16 @@ internal sealed class HttpSecurityService : IHttpSecurityService
         var baseDomain = context.Request.Host.Host;
 
         return _options.GetHeaders(this, _nonceValue, baseUri, baseDomain);
+    }
+
+
+    /// <inheritdoc/>
+    public List<KeyValuePair<string, string>> GetOnStartingSecurityHeaders(HttpContext context)
+    {
+        var baseUri = context.Request.Host.ToUriComponent();
+        var baseDomain = context.Request.Host.Host;
+
+        return _onStartingOptions.GetHeaders(this, _nonceValue, baseUri, baseDomain);
     }
 
 

@@ -59,52 +59,7 @@ internal class SourceGenerator : ISourceGenerator
             {
                 contentSecurityPolicyOptionsClassSymbol = classSymbol;
             }
-            else if (attributes.Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyAttribute").Any())
-            {
-                StringBuilder sb = new();
-
-                sb.AppendLinesIndented(0, "using System;");
-                sb.AppendLinesIndented(0, "using System.Linq;");
-                sb.AppendLinesIndented(0, "");
-                sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNet;");
-                sb.AppendLinesIndented(0, "");
-                sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(classSymbol)} : {GetClassBaseTypeName(classSymbol)}");
-                sb.AppendLinesIndented(0, "{");
-
-                var codeAdded = ProcessPolicyAttribute(classSymbol, sb);
-
-                codeAdded |= ProcessPolicyOptionsAttribute(classSymbol, sb);
-
-                foreach (var additionalAtributeName in _policyOptionAdditionalAttributes)
-                {
-                    codeAdded |= ProcessAdditionalPolicyOptionsAttribute(classSymbol, additionalAtributeName, sb);
-                }
-
-                codeAdded |= ProcessGroupNamePolicyOptionsAttribute(classSymbol, sb);
-                codeAdded |= ProcessHashValuePolicyOptionsAttribute(classSymbol, sb);
-                codeAdded |= ProcessHostSourcePolicyOptionsAttribute(classSymbol, sb);
-                codeAdded |= ProcessNoncePolicyOptionsAttribute(classSymbol, sb);
-                codeAdded |= ProcessPolicyNamePolicyOptionsAttribute(classSymbol, sb);
-                codeAdded |= ProcessSchemeSourcePolicyOptionsAttribute(classSymbol, sb);
-                codeAdded |= ProcessUriPolicyOptionsAttribute(classSymbol, sb);
-
-                sb.AppendLinesIndented(0, "}");
-
-                if (codeAdded)
-                {
-                    if (GetClassTypeName(classSymbol).Contains("Options"))
-                    {
-                        policyOptionClassSymbols[GetClassTypeName(classSymbol).Replace("Options", "")] = classSymbol;
-                    }
-                    else
-                    {
-                        policyClassSymbols.Add(classSymbol);
-                    }
-
-                    context.AddSource($"{GetClassTypeName(classSymbol, true)}.AddedFunctions.g.cs", sb.ToString());
-                }
-            }
-            else if (attributes.Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyOptionsAttribute").Any())
+            else
             {
                 StringBuilder sb = new();
 
