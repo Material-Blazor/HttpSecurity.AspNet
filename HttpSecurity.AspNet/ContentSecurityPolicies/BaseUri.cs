@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// object-src policy.
+/// base-uri policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -12,20 +12,18 @@
 [AddReportSample]
 [AddSelf]
 [AddSchemeSource]
-[AddStrictDynamic]
 [AddUnsafeEval]
 [AddUnsafeHashes]
-[AddUnsafeInline]
 [AddUri]
-public sealed partial class ObjectSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class BaseUriOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// object-src policy.
+/// base-uri policy.
 /// </summary>
-[ContentSecurityPolicy("object-src")]
-public sealed partial class ObjectSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("base-uri")]
+public sealed partial class BaseUri : ContentSecurityPolicyBase
 {
 }

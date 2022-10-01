@@ -20,7 +20,7 @@
 [AddAllowTopNavigation]
 [AddAllowTopNavigationAccessByUserActivation]
 [AddAllowTopNavigationToCustomProtocols]
-public sealed partial class SandboxCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class SandboxOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
@@ -29,6 +29,6 @@ public sealed partial class SandboxCSPOptions : ContentSecurityPolicyOptionsBase
 /// sandbox policy.
 /// </summary>
 [ContentSecurityPolicy("sandbox")]
-public sealed partial class SandboxCSP : ContentSecurityPolicyBase
+public sealed partial class Sandbox : ContentSecurityPolicyBase
 {
 }

@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// default-src policy.
+/// navigate-to policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class DefaultSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class NavigateToOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// default-src policy.
+/// navigate-to policy.
 /// </summary>
-[ContentSecurityPolicy("default-src")]
-public sealed partial class DefaultSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("navigate-to")]
+public sealed partial class NavigateTo : ContentSecurityPolicyBase
 {
 }

@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// manifest-src policy.
+/// child-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class ManifestSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class ChildSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// manifest-src policy.
+/// child-src policy.
 /// </summary>
-[ContentSecurityPolicy("manifest-src")]
-public sealed partial class ManifestSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("child-src")]
+public sealed partial class ChildSrc : ContentSecurityPolicyBase
 {
 }

@@ -6,7 +6,7 @@
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddGroupName]
-public sealed partial class ReportToCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class ReportToOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
@@ -15,6 +15,6 @@ public sealed partial class ReportToCSPOptions : ContentSecurityPolicyOptionsBas
 /// report-to policy.
 /// </summary>
 [ContentSecurityPolicy("report-to")]
-public sealed partial class ReportToCSP : ContentSecurityPolicyBase
+public sealed partial class ReportTo : ContentSecurityPolicyBase
 {
 }

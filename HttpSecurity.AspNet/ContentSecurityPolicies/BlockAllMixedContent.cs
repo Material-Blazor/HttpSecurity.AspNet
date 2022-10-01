@@ -5,7 +5,7 @@
 /// block-all-mixed-content policy - considered deprecated.
 /// </summary>
 [ContentSecurityPolicyOptions]
-public sealed partial class BlockAllMixedContentCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class BlockAllMixedContentOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
@@ -14,6 +14,6 @@ public sealed partial class BlockAllMixedContentCSPOptions : ContentSecurityPoli
 /// block-all-mixed-content policy - considered deprecated.
 /// </summary>
 [ContentSecurityPolicy("block-all-mixed-content")]
-public sealed partial class BlockAllMixedContentCSP : ContentSecurityPolicyBase
+public sealed partial class BlockAllMixedContent : ContentSecurityPolicyBase
 {
 }

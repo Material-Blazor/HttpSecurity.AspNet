@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// frame-src policy.
+/// script-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class FrameSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class ScriptSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// frame-src policy.
+/// script-src policy.
 /// </summary>
-[ContentSecurityPolicy("frame-src")]
-public sealed partial class FrameSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("script-src")]
+public sealed partial class ScriptSrc : ContentSecurityPolicyBase
 {
 }

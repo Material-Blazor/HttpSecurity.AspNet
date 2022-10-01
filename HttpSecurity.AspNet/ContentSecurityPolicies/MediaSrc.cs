@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// frame-ancestors policy.
+/// media-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -13,17 +13,19 @@
 [AddSelf]
 [AddSchemeSource]
 [AddStrictDynamic]
+[AddUnsafeEval]
 [AddUnsafeHashes]
+[AddUnsafeInline]
 [AddUri]
-public sealed partial class FrameAncestorsCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class MediaSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// frame-ancestors policy.
+/// media-src policy.
 /// </summary>
-[ContentSecurityPolicy("frame-ancestors")]
-public sealed partial class FrameAncestorsCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("media-src")]
+public sealed partial class MediaSrc : ContentSecurityPolicyBase
 {
 }

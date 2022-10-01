@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// navigate-to policy.
+/// manifest-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class NavigateToCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class ManifestSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// navigate-to policy.
+/// manifest-src policy.
 /// </summary>
-[ContentSecurityPolicy("navigate-to")]
-public sealed partial class NavigateToCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("manifest-src")]
+public sealed partial class ManifestSrc : ContentSecurityPolicyBase
 {
 }

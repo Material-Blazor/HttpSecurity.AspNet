@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// form-action policy.
+/// script-src-elem policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class FormActionCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class ScriptSrcElemOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// form-action policy.
+/// script-src-elem policy.
 /// </summary>
-[ContentSecurityPolicy("form-action")]
-public sealed partial class FormActionCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("script-src-elem")]
+public sealed partial class ScriptSrcElem : ContentSecurityPolicyBase
 {
 }

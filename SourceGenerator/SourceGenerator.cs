@@ -53,12 +53,13 @@ internal class SourceGenerator : ISourceGenerator
             var modifiers = classNode.Modifiers.Select(m => m.Text).ToList();
             SemanticModel classModel = compilation.GetSemanticModel(classNode.SyntaxTree);
             INamedTypeSymbol classSymbol = classModel.GetDeclaredSymbol(classNode);
+            var attributes = classSymbol.GetAttributes();
 
             if (GetClassTypeName(classSymbol) == "ContentSecurityPolicyOptions")
             {
                 contentSecurityPolicyOptionsClassSymbol = classSymbol;
             }
-            else
+            else if (attributes.Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyAttribute").Any())
             {
                 StringBuilder sb = new();
 
@@ -70,24 +71,67 @@ internal class SourceGenerator : ISourceGenerator
                 sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(classSymbol)} : {GetClassBaseTypeName(classSymbol)}");
                 sb.AppendLinesIndented(0, "{");
 
-                var codeAdded = false;
+                var codeAdded = ProcessPolicyAttribute(classSymbol, sb);
 
-                codeAdded = ProcessPolicyAttribute(classSymbol, sb, codeAdded);
-
-                codeAdded = ProcessPolicyOptionsAttribute(classSymbol, sb, codeAdded);
+                codeAdded |= ProcessPolicyOptionsAttribute(classSymbol, sb);
 
                 foreach (var additionalAtributeName in _policyOptionAdditionalAttributes)
                 {
-                    codeAdded = ProcessAdditionalPolicyOptionsAttribute(classSymbol, additionalAtributeName, sb, codeAdded);
+                    codeAdded |= ProcessAdditionalPolicyOptionsAttribute(classSymbol, additionalAtributeName, sb);
                 }
 
-                codeAdded = ProcessGroupNamePolicyOptionsAttribute(classSymbol, sb, codeAdded);
-                codeAdded = ProcessHashValuePolicyOptionsAttribute(classSymbol, sb, codeAdded);
-                codeAdded = ProcessHostSourcePolicyOptionsAttribute(classSymbol, sb, codeAdded);
-                codeAdded = ProcessNoncePolicyOptionsAttribute(classSymbol, sb, codeAdded);
-                codeAdded = ProcessPolicyNamePolicyOptionsAttribute(classSymbol, sb, codeAdded);
-                codeAdded = ProcessSchemeSourcePolicyOptionsAttribute(classSymbol, sb, codeAdded);
-                codeAdded = ProcessUriPolicyOptionsAttribute(classSymbol, sb, codeAdded);
+                codeAdded |= ProcessGroupNamePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessHashValuePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessHostSourcePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessNoncePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessPolicyNamePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessSchemeSourcePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessUriPolicyOptionsAttribute(classSymbol, sb);
+
+                sb.AppendLinesIndented(0, "}");
+
+                if (codeAdded)
+                {
+                    if (GetClassTypeName(classSymbol).Contains("Options"))
+                    {
+                        policyOptionClassSymbols[GetClassTypeName(classSymbol).Replace("Options", "")] = classSymbol;
+                    }
+                    else
+                    {
+                        policyClassSymbols.Add(classSymbol);
+                    }
+
+                    context.AddSource($"{GetClassTypeName(classSymbol, true)}.AddedFunctions.g.cs", sb.ToString());
+                }
+            }
+            else if (attributes.Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyOptionsAttribute").Any())
+            {
+                StringBuilder sb = new();
+
+                sb.AppendLinesIndented(0, "using System;");
+                sb.AppendLinesIndented(0, "using System.Linq;");
+                sb.AppendLinesIndented(0, "");
+                sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNet;");
+                sb.AppendLinesIndented(0, "");
+                sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(classSymbol)} : {GetClassBaseTypeName(classSymbol)}");
+                sb.AppendLinesIndented(0, "{");
+
+                var codeAdded = ProcessPolicyAttribute(classSymbol, sb);
+
+                codeAdded |= ProcessPolicyOptionsAttribute(classSymbol, sb);
+
+                foreach (var additionalAtributeName in _policyOptionAdditionalAttributes)
+                {
+                    codeAdded |= ProcessAdditionalPolicyOptionsAttribute(classSymbol, additionalAtributeName, sb);
+                }
+
+                codeAdded |= ProcessGroupNamePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessHashValuePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessHostSourcePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessNoncePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessPolicyNamePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessSchemeSourcePolicyOptionsAttribute(classSymbol, sb);
+                codeAdded |= ProcessUriPolicyOptionsAttribute(classSymbol, sb);
 
                 sb.AppendLinesIndented(0, "}");
 
@@ -175,13 +219,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessPolicyAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessPolicyAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyAttribute").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         var policyName = attribute.ConstructorArguments.FirstOrDefault().Value;
@@ -220,13 +264,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyOptionsAttribute").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "/// <summary>");
@@ -257,13 +301,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessAdditionalPolicyOptionsAttribute(INamedTypeSymbol classSymbol, string attributeName, StringBuilder sb, bool codeAdded)
+    private bool ProcessAdditionalPolicyOptionsAttribute(INamedTypeSymbol classSymbol, string attributeName, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName(attributeName)}").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "");
@@ -299,13 +343,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessGroupNamePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessGroupNamePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddGroupName")}").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "");
@@ -339,13 +383,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessHashValuePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessHashValuePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddHashValue")}").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "");
@@ -417,13 +461,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessHostSourcePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessHostSourcePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddHostSourceValue")}").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "");
@@ -457,13 +501,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessNoncePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessNoncePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddNonce")}").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "");
@@ -497,13 +541,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessPolicyNamePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessPolicyNamePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddPolicyName")}").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "");
@@ -537,13 +581,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessSchemeSourcePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessSchemeSourcePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddSchemeSource")}").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "");
@@ -605,13 +649,13 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessUriPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb, bool codeAdded)
+    private bool ProcessUriPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddUri")}").FirstOrDefault();
 
         if (attribute == default)
         {
-            return codeAdded;
+            return false;
         }
 
         sb.AppendLinesIndented(1, "");

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace HttpSecurity.AspNet.Middleware;
+namespace HttpSecurity.AspNet;
 
 
 /// <summary>

@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// font-src policy.
+/// style-src-attr policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class FontSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class StyleSrcAttrOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// font-src policy.
+/// style-src-attr policy.
 /// </summary>
-[ContentSecurityPolicy("font-src")]
-public sealed partial class FontSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("style-src-attr")]
+public sealed partial class StyleSrcAttr : ContentSecurityPolicyBase
 {
 }

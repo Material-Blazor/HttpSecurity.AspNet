@@ -6,7 +6,7 @@
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddUri]
-public sealed partial class ReportUriCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class ReportUriOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
@@ -15,6 +15,6 @@ public sealed partial class ReportUriCSPOptions : ContentSecurityPolicyOptionsBa
 /// report-uri policy - considered deprecated.
 /// </summary>
 [ContentSecurityPolicy("report-uri")]
-public sealed partial class ReportUriCSP : ContentSecurityPolicyBase
+public sealed partial class ReportUri : ContentSecurityPolicyBase
 {
 }

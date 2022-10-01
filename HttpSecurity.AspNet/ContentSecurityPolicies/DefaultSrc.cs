@@ -2,7 +2,7 @@
 
 
 /// <summary>
-/// img-src policy.
+/// default-src policy.
 /// </summary>
 [ContentSecurityPolicyOptions]
 [AddHashValue]
@@ -17,15 +17,15 @@
 [AddUnsafeHashes]
 [AddUnsafeInline]
 [AddUri]
-public sealed partial class ImgSrcCSPOptions : ContentSecurityPolicyOptionsBase
+public sealed partial class DefaultSrcOptions : ContentSecurityPolicyOptionsBase
 {
 }
 
 
 /// <summary>
-/// img-src policy.
+/// default-src policy.
 /// </summary>
-[ContentSecurityPolicy("img-src")]
-public sealed partial class ImgSrcCSP : ContentSecurityPolicyBase
+[ContentSecurityPolicy("default-src")]
+public sealed partial class DefaultSrc : ContentSecurityPolicyBase
 {
 }
