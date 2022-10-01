@@ -43,10 +43,10 @@ public sealed class HttpSecurityMiddleware
             {
                 foreach (var osh in osHeaders)
                 {
-                    context.Response.Headers.Append(osh.Key, osh.Value);
+                    context.Response.Headers[osh.Key] = osh.Value;
                 }
 
-                return Task.CompletedTask;
+                return Task.FromResult(0);
             });
         }
 
