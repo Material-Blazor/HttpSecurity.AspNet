@@ -46,12 +46,11 @@
     {
         base.OnInitialized();
 
-        var sh = HttpSecurityService.GetSecurityHeaders(HttpContextAccessor.HttpContext);
+        var sh = HttpSecurityService.GetSecurityHeaders(HttpContextAccessor.HttpContext!);
 
-        if (sh.TryGetValue(CSPKey, out var cspValue))
-        {
-            CSPHeaderValues = cspValue.Split(";").Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-        }
+        var csp = sh.Where(x => x.Key == CSPKey).FirstOrDefault();
+
+        CSPHeaderValues = csp.Value.Split(";").Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
         GeneralHeaders = sh.Where(x => x.Key != CSPKey).OrderBy(x => x.Key).ToList();
     }

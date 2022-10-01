@@ -1,90 +1,20 @@
-﻿namespace HttpSecurity.AspNet;
+﻿using Microsoft.AspNetCore.Server.Kestrel.Core.Features;
+
+namespace HttpSecurity.AspNet;
 
 
 /// <summary>
 /// Options for http security.
 /// </summary>
-public sealed partial class HttpSecurityOptions
+public sealed class HttpSecurityOptions
 {
-    private List<ContentSecurityPolicyBase> Policies { get; set; } = new();
+    internal readonly List<KeyValuePair<string, Func<IHttpSecurityService, string, string, string, string>>> HeaderBuilders = new();
 
 
     /// <summary>
-    /// The requested directive.
+    /// The built content security policy.
     /// </summary>
-    internal string AccessControlAllowOrigin { get; private set; } = "";
-
-
-    /// <summary>
-    /// The requested directive.
-    /// </summary>
-    internal string CacheControl { get; private set; } = string.Empty;
-
-
-    /// <summary>
-    /// The requested directive.
-    /// </summary>
-    internal string Expires { get; private set; } = string.Empty;
-
-
-    /// <summary>
-    /// The requested directive.
-    /// </summary>
-    internal ReferrerPolicyDirective? ReferrerPolicyDirective { get; private set; } = null;
-
-
-    /// <summary>
-    /// The requested directive.
-    /// </summary>
-    internal string PermissionsPolicy { get; private set; } = string.Empty;
-
-
-    /// <summary>
-    /// The requested directive.
-    /// </summary>
-    internal ulong StrictTransportSecurityMaxAgeExpireTime { get; private set; } = 0;
-
-
-    /// <summary>
-    /// The requested directive.
-    /// </summary>
-    internal bool StrictTransportSecurityIncludeSubDomains { get; private set; } = false;
-
-
-    /// <summary>
-    /// The requested directive.
-    /// </summary>
-    internal string XClientId { get; private set; } = string.Empty;
-
-
-    /// <summary>
-    /// The requested directive.
-    /// </summary>
-    internal bool XContentTypeOptionsNoSniff { get; private set; } = false;
-
-
-    /// <summary>
-    /// The requested X-Frame-Options directive.
-    /// </summary>
-    internal XFrameOptionsDirective? XFrameOptionsDirective { get; private set; } = null;
-
-
-    /// <summary>
-    /// The requested XPermittedCrossDomainPoliciesDirective directive.
-    /// </summary>
-    internal XPermittedCrossDomainPoliciesDirective? XPermittedCrossDomainPoliciesDirective { get; private set; } = null;
-
-
-    /// <summary>
-    /// The requested X-XSS-Protection directive.
-    /// </summary>
-    internal XXssProtectionDirective? XXssProtectionDirective { get; private set; } = null;
-
-
-    /// <summary>
-    /// The requested X-XSS-Protection directive.
-    /// </summary>
-    internal string XXssProtectionReportingUri { get; private set; } = string.Empty;
+    internal ContentSecurityPolicyOptions ContentSecurityPolicy { get; set; } = null;
 
 
     /// <summary>
@@ -108,7 +38,26 @@ public sealed partial class HttpSecurityOptions
     /// </summary>
     internal string GetContentSecurityPolicy(IHttpSecurityService httpSecurityService, string nonceValue, string baseUri, string baseDomain)
     {
-        return string.Join(' ', Policies.Select(x => x.GetPolicyValue(httpSecurityService, nonceValue, baseUri, baseDomain)).OrderBy(x => x));
+        return ContentSecurityPolicy is null ? "" : string.Join(' ', ContentSecurityPolicy.Policies.Select(x => x.GetPolicyValue(httpSecurityService, nonceValue, baseUri, baseDomain)).OrderBy(x => x));
+    }
+
+
+    /// <summary>
+    /// Adds a content security policy policy.
+    /// </summary>
+    /// <param name="configureOptions">Configures the content security policy</param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddContentSecurityOptions(Action<ContentSecurityPolicyOptions> configureOptions)
+    {
+        ContentSecurityPolicyOptions options = new();
+        
+        configureOptions(options);
+
+        HeaderBuilders.Add(new(
+            "Content-Security-Policy", 
+            (IHttpSecurityService httpSecurityService, string nonceValue, string baseUri, string baseDomain) => string.Join(' ', options.Policies.Select(x => x.GetPolicyValue(httpSecurityService, nonceValue, baseUri, baseDomain)).OrderBy(x => x))));
+
+        return this;
     }
 
 
@@ -118,8 +67,7 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddAccessControlAllowOriginAll()
     {
-        AccessControlAllowOrigin = "*";
-        return this;
+        return AddAccessControlAllowOriginSingle("*");
     }
 
 
@@ -129,7 +77,7 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddAccessControlAllowOriginSingle(string origin)
     {
-        AccessControlAllowOrigin = origin;
+        HeaderBuilders.Add(new("Access-Control-Allow-Origin", (_, _, _, _) => origin));
         return this;
     }
 
@@ -140,7 +88,7 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddCacheControl(string cacheControl)
     {
-        CacheControl = cacheControl;
+        HeaderBuilders.Add(new("Cache-Control", (_, _, _, _) => cacheControl));
         return this;
     }
 
@@ -151,7 +99,7 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddExpires(string expires)
     {
-        Expires = expires;
+        HeaderBuilders.Add(new("Expires", (_, _, _, _) => expires));
         return this;
     }
 
@@ -163,7 +111,21 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddReferrerPolicy(ReferrerPolicyDirective referrerPolicyDirective)
     {
-        ReferrerPolicyDirective = referrerPolicyDirective;
+        var value = referrerPolicyDirective switch
+        {
+            ReferrerPolicyDirective.NoReferrer => "no-referrer",
+            ReferrerPolicyDirective.NoReferrerWhenDowngrade => "no-referrer-when-downgrade",
+            ReferrerPolicyDirective.Origin => "origin",
+            ReferrerPolicyDirective.OriginWhenCrossOrigin => "origin-when-cross-origin",
+            ReferrerPolicyDirective.SameOrigin => "same-origin",
+            ReferrerPolicyDirective.StrictOrigin => "strict-origin",
+            ReferrerPolicyDirective.StrictOriginWhenCrossOrigin => "strict-origin-when-cross-origin",
+            ReferrerPolicyDirective.UnsafeUrl => "unsafe-url",
+            _ => throw new NotImplementedException(),
+        };
+
+        HeaderBuilders.Add(new("Referrer-Policy", (_, _, _, _) => value));
+
         return this;
     }
 
@@ -174,7 +136,7 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddPermissionsPolicy(string permissionsPolicy)
     {
-        PermissionsPolicy = permissionsPolicy;
+        HeaderBuilders.Add(new("Permissions-Policy", (_, _, _, _) => permissionsPolicy));
         return this;
     }
 
@@ -185,8 +147,7 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddStrictTransportSecurity(ulong maxAgeExpireTime, bool includeSubDomains = false)
     {
-        StrictTransportSecurityMaxAgeExpireTime = maxAgeExpireTime;
-        StrictTransportSecurityIncludeSubDomains = includeSubDomains;
+        HeaderBuilders.Add(new("Strict-Transport-Security", (_, _, _, _) => $"max-age={maxAgeExpireTime}{(includeSubDomains ? " includeSubDomains" : "")}"));
         return this;
     }
 
@@ -197,7 +158,7 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddXClientId(string clientId)
     {
-        XClientId = clientId;
+        HeaderBuilders.Add(new("X-Client-Id", (_, _, _, _) => clientId));
         return this;
     }
 
@@ -208,7 +169,7 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddXContentTypeOptionsNoSniff()
     {
-        XContentTypeOptionsNoSniff = true;
+        HeaderBuilders.Add(new("X-Content-Type-Options", (_, _, _, _) => "nosniff"));
         return this;
     }
 
@@ -220,19 +181,29 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddXFrameOptionsDirective(XFrameOptionsDirective xFrameOptionsDirective)
     {
-        XFrameOptionsDirective = xFrameOptionsDirective;
+        HeaderBuilders.Add(new("X-Frame-Options", (_, _, _, _) => xFrameOptionsDirective.ToString().ToUpper()));
         return this;
     }
 
 
     /// <summary>
-    /// Adds an xPermittedCrossDomainPoliciesDirective directive.
+    /// Adds an X-Permitted-Cross-Domain-Policies directive.
     /// </summary>
     /// <param name="xFrameOptionsDirective"></param>
     /// <returns></returns>
     public HttpSecurityOptions AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective xPermittedCrossDomainPoliciesDirective)
     {
-        XPermittedCrossDomainPoliciesDirective = xPermittedCrossDomainPoliciesDirective;
+        var value = xPermittedCrossDomainPoliciesDirective switch
+        {
+            XPermittedCrossDomainPoliciesDirective.All => "all",
+            XPermittedCrossDomainPoliciesDirective.ByContentOnly => "by-content-only",
+            XPermittedCrossDomainPoliciesDirective.ByFtpOnly => "by-ftp-only",
+            XPermittedCrossDomainPoliciesDirective.MasterOnly => "master-only",
+            XPermittedCrossDomainPoliciesDirective.None => "none",
+            _ => throw new NotImplementedException(),
+        };
+
+        HeaderBuilders.Add(new("X-Permitted-Cross-Domain-Policies", (_, _, _, _) => value));
         return this;
     }
 
@@ -245,8 +216,22 @@ public sealed partial class HttpSecurityOptions
     /// <returns></returns>
     public HttpSecurityOptions AddXXssProtectionDirective(XXssProtectionDirective xXssProtectionDirective, string reportingUri = "")
     {
-        XXssProtectionDirective = xXssProtectionDirective;
-        XXssProtectionReportingUri = reportingUri;
+        var value = xXssProtectionDirective switch
+        {
+            XXssProtectionDirective.Zero => "0",
+            XXssProtectionDirective.One => "1",
+            XXssProtectionDirective.OneModeBlock => "1; mode=block",
+            XXssProtectionDirective.OneReportWithUri => $"1; report={reportingUri}",
+            _ => throw new NotImplementedException(),
+        };
+
+        HeaderBuilders.Add(new("X-XSS-Protection", (_, _, _, _) => value));
         return this;
+    }
+
+
+    internal List<KeyValuePair<string, string>> GetHeaders(IHttpSecurityService httpSecurityService, string nonceValue, string baseUri, string baseDomain)
+    {
+        return HeaderBuilders.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.Invoke(httpSecurityService, nonceValue, baseUri, baseDomain))).ToList();
     }
 }

@@ -12,7 +12,7 @@ public interface IHttpSecurityService
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    public Dictionary<string, string> GetSecurityHeaders(HttpContext context);
+    public List<KeyValuePair<string, string>> GetSecurityHeaders(HttpContext context);
 
 
     /// <summary>

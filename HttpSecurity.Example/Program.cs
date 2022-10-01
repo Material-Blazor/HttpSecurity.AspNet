@@ -18,26 +18,30 @@ builder.Services.AddHttpsSecurityHeaders(options =>
 {
 options
     // Content Security Policies
-    .AddBaseUriCSP(o => o.AddSelf())
-    .AddBlockAllMixedContentCSP()
-    .AddChildSrcCSP(o => o.AddSelf())
-    .AddConnectSrcCSP(o => o.AddSelf().AddUri((baseUri, baseDomain) => $"wss://{baseDomain}:*"))
-    // The generated hashes do nothing here, and we include it here only to show that generated hash values can be added to policies - script-src would generally be the policy where you use this technique.
-    .AddDefaultSrcCSP(o => o.AddSelf().AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddGeneratedHashValues(StaticFileExtension.CSS))
-    .AddFontSrcCSP(o => o.AddSelf())
-    .AddFrameAncestorsCSP(o => o.AddNone())
-    .AddFrameSrcCSP(o => o.AddSelf())
-    .AddFormActionCSP(o => o.AddNone())
-    .AddImgSrcCSP(o => o.AddSelf().AddUri("www.google-analytics.com").AddUri("*.openstreetmap.org").AddSchemeSource(SchemeSource.Data, "w3.org/svg/2000"))
-    .AddManifestSrcCSP(o => o.AddSelf())
-    .AddMediaSrcCSP(o => o.AddSelf())
-    .AddPrefetchSrcCSP(o => o.AddSelf())
-    .AddObjectSrcCSP(o => o.AddNone())
-    .AddReportUriCSP(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
-    .AddScriptSrcCSP(o => o.AddSelf().AddNonce().AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddUriIf((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js", () => builder.Environment.IsDevelopment()).AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js").AddGeneratedHashValues(StaticFileExtension.JS))
-    .AddStyleSrcCSP(o => o.AddSelf().AddUnsafeInline().AddUnsafeHashes().AddReportSample())
-    .AddUpgradeInsecureRequestsCSP()
-    .AddWorkerSrcCSP(o => o.AddSelf())
+    .AddContentSecurityOptions(cspOptions =>
+    {
+        cspOptions
+            .AddBaseUriCSP(o => o.AddSelf())
+            .AddBlockAllMixedContentCSP()
+            .AddChildSrcCSP(o => o.AddSelf())
+            .AddConnectSrcCSP(o => o.AddSelf().AddUri((baseUri, baseDomain) => $"wss://{baseDomain}:*"))
+            // The generated hashes do nothing here, and we include it here only to show that generated hash values can be added to policies - script-src would generally be the policy where you use this technique.
+            .AddDefaultSrcCSP(o => o.AddSelf().AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddGeneratedHashValues(StaticFileExtension.CSS))
+            .AddFontSrcCSP(o => o.AddSelf())
+            .AddFrameAncestorsCSP(o => o.AddNone())
+            .AddFrameSrcCSP(o => o.AddSelf())
+            .AddFormActionCSP(o => o.AddNone())
+            .AddImgSrcCSP(o => o.AddSelf().AddUri("www.google-analytics.com").AddUri("*.openstreetmap.org").AddSchemeSource(SchemeSource.Data, "w3.org/svg/2000"))
+            .AddManifestSrcCSP(o => o.AddSelf())
+            .AddMediaSrcCSP(o => o.AddSelf())
+            .AddPrefetchSrcCSP(o => o.AddSelf())
+            .AddObjectSrcCSP(o => o.AddNone())
+            .AddReportUriCSP(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
+            .AddScriptSrcCSP(o => o.AddSelf().AddNonce().AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=").AddUriIf((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js", () => builder.Environment.IsDevelopment()).AddStrictDynamicIf(() => !builder.Environment.IsDevelopment()).AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js").AddGeneratedHashValues(StaticFileExtension.JS))
+            .AddStyleSrcCSP(o => o.AddSelf().AddUnsafeInline().AddUnsafeHashes().AddReportSample())
+            .AddUpgradeInsecureRequestsCSP()
+            .AddWorkerSrcCSP(o => o.AddSelf());
+    })
 
     // Other headers
         .AddAccessControlAllowOriginSingle("a.com")

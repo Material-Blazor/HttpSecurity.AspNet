@@ -46,7 +46,7 @@ internal class SourceGenerator : ISourceGenerator
 
         List<INamedTypeSymbol> policyClassSymbols = new();
         Dictionary<string, INamedTypeSymbol> policyOptionClassSymbols = new();
-        INamedTypeSymbol httpSecurityOptionsClassSymbol = null;
+        INamedTypeSymbol contentSecurityPolicyOptionsClassSymbol = null;
 
         foreach (var classNode in receiver.Classes)
         {
@@ -54,9 +54,9 @@ internal class SourceGenerator : ISourceGenerator
             SemanticModel classModel = compilation.GetSemanticModel(classNode.SyntaxTree);
             INamedTypeSymbol classSymbol = classModel.GetDeclaredSymbol(classNode);
 
-            if (GetClassTypeName(classSymbol) == "HttpSecurityOptions")
+            if (GetClassTypeName(classSymbol) == "ContentSecurityPolicyOptions")
             {
-                httpSecurityOptionsClassSymbol = classSymbol;
+                contentSecurityPolicyOptionsClassSymbol = classSymbol;
             }
             else
             {
@@ -107,11 +107,11 @@ internal class SourceGenerator : ISourceGenerator
             }
         }
 
-        context.AddSource($"{GetClassTypeName(httpSecurityOptionsClassSymbol, true)}.AddedFunctions.g.cs", ProcessContentSecurityPolicyOptions(httpSecurityOptionsClassSymbol, policyClassSymbols, policyOptionClassSymbols).ToString());
+        context.AddSource($"{GetClassTypeName(contentSecurityPolicyOptionsClassSymbol, true)}.AddedFunctions.g.cs", ProcessContentSecurityPolicyOptions(contentSecurityPolicyOptionsClassSymbol, policyClassSymbols, policyOptionClassSymbols).ToString());
     }
 
 
-    private StringBuilder ProcessContentSecurityPolicyOptions(INamedTypeSymbol httpSecurityOptionsClassSymbol, List<INamedTypeSymbol> policyClassSymbols, Dictionary<string, INamedTypeSymbol> policyOptionClassSymbols)
+    private StringBuilder ProcessContentSecurityPolicyOptions(INamedTypeSymbol contentSecurityPolicyOptionsClassSymbol, List<INamedTypeSymbol> policyClassSymbols, Dictionary<string, INamedTypeSymbol> policyOptionClassSymbols)
     {
         StringBuilder sb = new();
         var isFirst = true;
@@ -121,7 +121,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(0, "");
         sb.AppendLinesIndented(0, $"namespace HttpSecurity.AspNet;");
         sb.AppendLinesIndented(0, "");
-        sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(httpSecurityOptionsClassSymbol)}");
+        sb.AppendLinesIndented(0, $"public sealed partial class {GetClassTypeName(contentSecurityPolicyOptionsClassSymbol)}");
         sb.AppendLinesIndented(0, "{");
 
         foreach (var policyClassSymbol in policyClassSymbols.OrderBy(x => x.Name))
@@ -146,7 +146,7 @@ internal class SourceGenerator : ISourceGenerator
                 sb.AppendLinesIndented(1, "/// </summary>");
                 sb.AppendLinesIndented(1, "/// <param name=\"configureOptions\">Configures policy options</param>");
                 sb.AppendLinesIndented(1, "/// <returns></returns>");
-                sb.AppendLinesIndented(1, $"public HttpSecurityOptions Add{policyClassTypeName}(Action<{policyClassTypeName}Options> configureOptions)");
+                sb.AppendLinesIndented(1, $"public ContentSecurityPolicyOptions Add{policyClassTypeName}(Action<{policyClassTypeName}Options> configureOptions)");
                 sb.AppendLinesIndented(1, "{");
                 sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}(configureOptions));");
                 sb.AppendLinesIndented(2, "");
@@ -160,7 +160,7 @@ internal class SourceGenerator : ISourceGenerator
                 sb.AppendLinesIndented(1, "/// </summary>");
                 sb.AppendLinesIndented(1, "/// <param name=\"configureOptions\">Configures policy options</param>");
                 sb.AppendLinesIndented(1, "/// <returns></returns>");
-                sb.AppendLinesIndented(1, $"public HttpSecurityOptions Add{policyClassTypeName}()");
+                sb.AppendLinesIndented(1, $"public ContentSecurityPolicyOptions Add{policyClassTypeName}()");
                 sb.AppendLinesIndented(1, "{");
                 sb.AppendLinesIndented(2, $"Policies.Add(new {policyClassTypeName}());");
                 sb.AppendLinesIndented(2, "");
