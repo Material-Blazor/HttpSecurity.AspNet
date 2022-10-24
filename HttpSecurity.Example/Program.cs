@@ -4,10 +4,6 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string[] files = Directory.GetFiles(builder.Environment.WebRootPath,
-            "*.js",
-            SearchOption.AllDirectories);
-
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages();
