@@ -21,6 +21,11 @@ internal class DefaultStaticFileService : IGeneratedHashesProvider
     /// <inheritdoc/>
     public FileHashDataset GetFileHashDataset(IServiceProvider _)
     {
+        if (_env.WebRootPath == null)
+        {
+            return new();
+        }
+
         var jsHashes = BuildHashes(Directory.GetFiles(_env.WebRootPath, "*.js", SearchOption.AllDirectories));
         var cssHashes = BuildHashes(Directory.GetFiles(_env.WebRootPath, "*.css", SearchOption.AllDirectories));
 
