@@ -12,8 +12,6 @@ on:
   push:
     tags:
       - '*' # Push events to matching *, i.e. 1.0, 20.15.10
-    branches:
-      - experimental-release-workflow
 
 env:
   buildPlatform: 'Any CPU'
@@ -42,52 +40,20 @@ jobs:
     - name: Nothing to see here
       run: echo ""
 
-
-############################################################################################################
-# Store the version information
-############################################################################################################
-  version:
-    name: Set version identifier
-    runs-on: ubuntu-latest
-
-    steps:
-    - id: get
-      run: |
-        echo "::set-output name=identifier::${GITHUB_REF/refs\/tags\//}"
-    - id: show
-      run: |
-        echo "${{ steps.get.outputs.identifier }}"
-    outputs:
-      identifier: ${{ steps.get.outputs.identifier }}
-
-
-############################################################################################################
-# Store the branch information
-############################################################################################################
-  branch:
-    name: Set branch identifier
-    runs-on: ubuntu-latest
-    steps:
-    - id: get
-      run: |
-        echo "::set-output name=identifier::${GITHUB_REF/refs\/heads\//}"
-    - id: show
-      run: |
-        echo "${{ steps.get.outputs.identifier }}"
-    outputs:
-      identifier: ${{ steps.get.outputs.identifier }}
-
-
 ############################################################################################################
 # Build package and deploy
 ############################################################################################################
   build-and-deploy-package:
     name: Build nuget package & deploy to nuget
-    needs: [version, branch, is-on-material-blazor]
+    needs: [is-on-material-blazor]
 
     runs-on: windows-latest
 
     steps:
+    - name: Get the version
+      run: echo "version=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+      shell: bash
+
     - name: Checkout repository under $GITHUB_WORKSPACE so the job can access it 🛎️
       uses: actions/checkout@v3
       with:
@@ -100,10 +66,10 @@ jobs:
         include-prerelease: true
 
     - name: Build HttpSecurity.AspNet 🔧
-      run: dotnet build ${{env.projectCSFB}} --configuration ${{env.buildConfiguration}} -p:Version=${{needs.version.outputs.identifier}}
+      run: dotnet build ${{env.projectCSFB}} --configuration ${{env.buildConfiguration}} -p:Version=${{env.version}}
 
     - name: Generate the NuGet package 🔧
-      run: dotnet pack ${{env.projectCSFB}} --no-build --configuration ${{env.buildConfiguration}} --output ${{env.outputCSFB}} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -p:Version=${{needs.version.outputs.identifier}}
+      run: dotnet pack ${{env.projectCSFB}} --no-build --configuration ${{env.buildConfiguration}} --output ${{env.outputCSFB}} -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -p:Version=${{env.version}}
 
     - name: Display HttpSecurity.AspNet package output Ꙫ
       run: dir ${{env.outputCSFB}}
