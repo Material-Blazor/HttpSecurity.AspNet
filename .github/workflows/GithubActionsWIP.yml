@@ -43,7 +43,6 @@ jobs:
     name: Build nuget package
 
     runs-on: windows-latest
-    if: github.event_name != 'workflow_dispatch'
 
     steps:
     - name: Set ciSuffix as env variable

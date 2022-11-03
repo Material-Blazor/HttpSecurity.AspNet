@@ -76,7 +76,6 @@ jobs:
 
     - name: Upload Package 🚀
       run: dotnet nuget push ${{env.outputCSFB}}\*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
-      if: needs.branch.outputs.identifier != 'experimental-release-workflow' # this check is important to allow testing this workflow on a non-main branch without deploying to nuget: this critical action is not performed when not on main.
 
 
 ############################################################################################################
@@ -84,18 +83,21 @@ jobs:
 ############################################################################################################
   create-release:
     name: Create release
-    needs: [build-and-deploy-package, branch, version, is-on-material-blazor]
+    needs: [build-and-deploy-package, is-on-material-blazor]
 
     runs-on: ubuntu-latest
 
     steps:
+    - name: Get the version
+      run: echo "version=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+      shell: bash
+
     - name: Create Release
-      if: needs.branch.outputs.identifier != 'experimental-release-workflow' # this check is important to allow testing this workflow on a non-main branch without deploying to nuget: this critical action is not performed when not on main.
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{needs.version.outputs.identifier}}
-        release_name: Release ${{needs.version.outputs.identifier}}
+        tag_name: ${{env.version}}
+        release_name: Release ${{env.version}}
         draft: false
         prerelease: false
