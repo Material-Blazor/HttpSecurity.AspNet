@@ -27,9 +27,6 @@ public sealed class HttpSecurityMiddleware
     /// <returns></returns>
     public Task Invoke(HttpContext context, IHttpSecurityService service)
     {
-        var baseUri = context.Request.Host.ToUriComponent();
-        var baseDomain = context.Request.Host.Host;
-
         foreach (var header in ((HttpSecurityService)service).GetSecurityHeaders(context))
         {
             context.Response.Headers[header.Key] = header.Value;

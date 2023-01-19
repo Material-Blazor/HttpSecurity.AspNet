@@ -62,27 +62,6 @@ public sealed class HttpSecurityOptions
 
 
     /// <summary>
-    /// Adds an Access-Control-Allow-Origin directive with <c>*</c> value indicating allowing all origins.
-    /// </summary>
-    /// <returns></returns>
-    public HttpSecurityOptions AddAccessControlAllowOriginAll()
-    {
-        return AddAccessControlAllowOriginSingle("*");
-    }
-
-
-    /// <summary>
-    /// Adds an Access-Control-Allow-Origin directive with the supplied value.
-    /// </summary>
-    /// <returns></returns>
-    public HttpSecurityOptions AddAccessControlAllowOriginSingle(string origin)
-    {
-        HeaderBuilders.Add(new("Access-Control-Allow-Origin", (_, _, _, _) => origin));
-        return this;
-    }
-
-
-    /// <summary>
     /// Adds an Cache-Control directive with the value supplied.
     /// </summary>
     /// <returns></returns>

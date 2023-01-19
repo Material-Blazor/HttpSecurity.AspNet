@@ -58,7 +58,6 @@ builder.Services.AddHttpsSecurityHeaders(options =>
                 .AddUpgradeInsecureRequests()
                 .AddWorkerSrc(o => o.AddSelf());
         })
-        .AddAccessControlAllowOriginSingle("a.com")
         .AddReferrerPolicy(ReferrerPolicyDirective.NoReferrer)
         .AddPermissionsPolicy("accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()")
         .AddStrictTransportSecurity(31536000, true)

@@ -4,6 +4,22 @@ title: ReleaseNotes
 ---
 # Release Notes
 
+#### [1.0.0](https://github.com/Material-Blazor/HttpSecurity.AspNet/tree/1.0.0)
+
+Released 2023-01-19
+
+**Updates**
+
+Removed AddAccessControlAllowOrigin*() headers.
+
+**Breaking Changes**
+
+Moved from .Net 6 to .Net 7
+
+**Known issues**
+
+<br />
+
 #### [1.0.0-preview.6](https://github.com/Material-Blazor/HttpSecurity.AspNet/tree/1.0.0-preview.6)
 
 Released 2022-11-03
