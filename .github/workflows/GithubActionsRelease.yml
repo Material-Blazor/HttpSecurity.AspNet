@@ -74,8 +74,8 @@ jobs:
     - name: Display HttpSecurity.AspNet package output Ꙫ
       run: dir ${{env.outputCSFB}}
 
-    #- name: Upload Package 🚀
-    #  run: dotnet nuget push ${{env.outputCSFB}}\*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
+    - name: Upload Package 🚀
+      run: dotnet nuget push ${{env.outputCSFB}}\*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
 
 
 ############################################################################################################
