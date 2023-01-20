@@ -59,7 +59,7 @@ jobs:
       with:
         persist-credentials: false
 
-    - name: Use prelease dotnet
+    - name: Use dotnet
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: '7.0.x'
@@ -74,8 +74,8 @@ jobs:
     - name: Display HttpSecurity.AspNet package output Ꙫ
       run: dir ${{env.outputCSFB}}
 
-    - name: Upload Package 🚀
-      run: dotnet nuget push ${{env.outputCSFB}}\*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
+    #- name: Upload Package 🚀
+    #  run: dotnet nuget push ${{env.outputCSFB}}\*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
 
 
 ############################################################################################################
@@ -93,11 +93,7 @@ jobs:
       shell: bash
 
     - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: ncipollo/release-action@v1
       with:
-        tag_name: ${{env.version}}
-        release_name: Release ${{env.version}}
-        draft: false
-        prerelease: false
+        name: Release ${{env.version}}
+        tag:  ${{env.version}}
