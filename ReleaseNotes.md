@@ -4,6 +4,20 @@ title: ReleaseNotes
 ---
 # Release Notes
 
+#### [1.1.0](https://github.com/Material-Blazor/HttpSecurity.AspNet/tree/1.1.0)
+
+Released 2023-06-07
+
+**Updates**
+
+Removed deprecated prefetch-src headers.
+
+**Breaking Changes**
+
+**Known issues**
+
+<br />
+
 #### [1.0.0](https://github.com/Material-Blazor/HttpSecurity.AspNet/tree/1.0.0)
 
 Released 2023-01-19
