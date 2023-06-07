@@ -55,7 +55,7 @@ jobs:
         persist-credentials: false
 
     - name: Use dotnet
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '7.0.x'
         include-prerelease: true
