@@ -39,7 +39,6 @@ builder.Services.AddHttpsSecurityHeaders(options =>
                     .AddSchemeSource(SchemeSource.Data, "w3.org/svg/2000"))
                 .AddManifestSrc(o => o.AddSelf())
                 .AddMediaSrc(o => o.AddSelf())
-                .AddPrefetchSrc(o => o.AddSelf())
                 .AddObjectSrc(o => o.AddNone())
                 .AddReportUri(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
                 .AddScriptSrc(o => o
