@@ -1,4 +1,4 @@
-﻿name: GithubActionsRelease
+name: GithubActionsRelease
 
 ############################################################################################################
 # All of thes jobs runs commands only on a tag push in the Material-Blazor\Material.Blazor repository
@@ -55,7 +55,7 @@ jobs:
       shell: bash
 
     - name: Checkout repository under $GITHUB_WORKSPACE so the job can access it 🛎️
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         persist-credentials: false
 
