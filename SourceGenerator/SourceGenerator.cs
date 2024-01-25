@@ -406,7 +406,7 @@ internal class SourceGenerator : ISourceGenerator
         sb.AppendLinesIndented(2, "");
         sb.AppendLinesIndented(2, "foreach (var extension in StaticFileExtensions)");
         sb.AppendLinesIndented(2, "{");
-        sb.AppendLinesIndented(3, "result += httpSecurityService.GetCSPHashesSubsting(extension);");
+        sb.AppendLinesIndented(3, "result += httpSecurityService.GetCSPHashesSubstring(extension);");
         sb.AppendLinesIndented(2, "}");
         sb.AppendLinesIndented(2, "");
         sb.AppendLinesIndented(2, "return result;");
