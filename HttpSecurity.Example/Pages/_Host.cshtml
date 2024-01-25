@@ -12,14 +12,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
-    <link rel="stylesheet" href="https://a.com/a.css" />
+    @* <link rel="stylesheet" href="https://a.com/a.css" /> *@
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" integrity="@HttpSecurityService.GetFileHashString("bootstrap.min.css")" />
     <link rel="stylesheet" href="css/site.css" integrity="@HttpSecurityService.GetFileHashString("site.css")" />
     <link rel="stylesheet" href="HttpSecurity.Example.styles.css" integrity="@HttpSecurityService.GetFileHashString("HttpSecurity.Example.styles.css")" />
-    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+    <component type="typeof(HeadOutlet)" render-mode="Server" />
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <component type="typeof(App)" render-mode="Server" />
 
     <div id="blazor-error-ui">
         <environment include="Staging,Production">
