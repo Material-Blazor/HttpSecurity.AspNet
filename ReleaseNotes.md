@@ -6,7 +6,7 @@ title: ReleaseNotes
 
 #### [1.2.0](https://github.com/Material-Blazor/HttpSecurity.AspNet/tree/1.2.0)
 
-Released 2024-01-??
+Released 2024-01-27
 
 **Updates**
 - Removed deprecated NuGet packages.

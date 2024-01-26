@@ -1,5 +1,4 @@
 using HttpSecurity.AspNet;
-using HttpSecurity.Example.Data;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddHttpsSecurityHeaders(options =>
 {
@@ -104,11 +102,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Added for debugging purposes - do not include this in your project
-app.Use(async (context, next) =>
-{
-    // Call the next delegate/middleware in the pipeline.
-    await next(context);
-});
+//app.Use(async (context, next) =>
+//{
+//    // Call the next delegate/middleware in the pipeline.
+//    await next(context);
+//});
 
 app.UseHttpsRedirection();
 
