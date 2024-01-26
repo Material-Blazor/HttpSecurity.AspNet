@@ -4,6 +4,8 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>11</LangVersion>
 
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+		
 		<!-- Uncomment the line below to debug the source generator -->
 		
 		<!--<DefineConstants>GENERATOR_DEBUG</DefineConstants>-->

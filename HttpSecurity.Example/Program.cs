@@ -102,11 +102,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Added for debugging purposes - do not include this in your project
-//app.Use(async (context, next) =>
-//{
-//    // Call the next delegate/middleware in the pipeline.
-//    await next(context);
-//});
+app.Use(async (context, next) =>
+{
+    // Call the next delegate/middleware in the pipeline.
+    await next(context);
+});
 
 app.UseHttpsRedirection();
 

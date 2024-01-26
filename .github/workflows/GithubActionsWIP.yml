@@ -57,8 +57,7 @@ jobs:
     - name: Use dotnet
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
-        include-prerelease: true
+        dotnet-version: '8.x'
 
     - name: Build HttpSecurity.AspNet 🔧
       run: dotnet build ${{env.projectCSFB}} --configuration ${{env.buildConfiguration}} --version-suffix ${{env.ciSuffix}}
