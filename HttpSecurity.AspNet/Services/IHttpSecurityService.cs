@@ -50,5 +50,5 @@ public interface IHttpSecurityService
     /// </summary>
     /// <param name="staticFileExtension"></param>
     /// <returns></returns>
-    internal string GetCSPHashesSubsting(StaticFileExtension staticFileExtension);
+    internal string GetCSPHashesSubstring(StaticFileExtension staticFileExtension);
 }

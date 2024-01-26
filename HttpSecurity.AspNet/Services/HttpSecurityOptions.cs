@@ -14,7 +14,7 @@ public sealed class HttpSecurityOptions
     /// <summary>
     /// The built content security policy.
     /// </summary>
-    internal ContentSecurityPolicyOptions ContentSecurityPolicy { get; set; } = null;
+    internal ContentSecurityPolicyOptions? ContentSecurityPolicy { get; set; } = null;
 
 
     /// <summary>

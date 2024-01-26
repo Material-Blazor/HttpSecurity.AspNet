@@ -1,5 +1,4 @@
 using HttpSecurity.AspNet;
-using HttpSecurity.Example.Data;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddHttpsSecurityHeaders(options =>
 {
@@ -17,50 +15,70 @@ builder.Services.AddHttpsSecurityHeaders(options =>
         {
             cspOptions
                 .AddBaseUri(o => o.AddSelf())
+
                 .AddBlockAllMixedContent()
+
                 .AddChildSrc(o => o.AddSelf())
+
                 .AddConnectSrc(o => o
                     .AddSelf()
                     .AddUri((baseUri, baseDomain) => $"wss://{baseDomain}:*"))
+
                 // The generated hashes do nothing here, and we include it here only to show that generated hash values can be added to policies - script-src would generally be the policy where you use this technique.
                 .AddDefaultSrc(o => o
                     .AddSelf()
                     .AddStrictDynamicIf(() => !builder.Environment.IsDevelopment())
                     .AddUnsafeInline()
                     .AddGeneratedHashValues(StaticFileExtension.CSS))
+
                 .AddFontSrc(o => o.AddSelf())
+
                 .AddFrameAncestors(o => o.AddNone())
+
                 .AddFrameSrc(o => o.AddSelf())
+
                 .AddFormAction(o => o.AddNone())
+
                 .AddImgSrc(o => o
                     .AddSelf()  
                     .AddUri("www.google-analytics.com")
                     .AddUri("*.openstreetmap.org")
                     .AddSchemeSource(SchemeSource.Data, "w3.org/svg/2000"))
+
                 .AddManifestSrc(o => o.AddSelf())
+
                 .AddMediaSrc(o => o.AddSelf())
+
                 .AddObjectSrc(o => o.AddNone())
+
                 .AddReportUri(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
+
                 .AddScriptSrc(o => o
                     .AddSelf()
                     .AddNonce()
                     .AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=")
-                    .AddUriIf((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js", () => builder.Environment.IsDevelopment())
-                    .AddStrictDynamicIf(() => !builder.Environment.IsDevelopment())
-                    .AddUnsafeInline().AddReportSample().AddUnsafeEval().AddUri("https://www.googletagmanager.com/gtag/js")
+                    // StrictDynamic works on Chromium browsers but fails for both Firefox and Safari
+                    //.AddStrictDynamicIf(() => !builder.Environment.IsDevelopment())
+                    .AddReportSample()
+                    .AddUri("https://www.googletagmanager.com/gtag/js")
+                    .AddUri((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js")
+                    .AddUri((baseUri, baseDomain) => $"https://{baseUri}/_framework/blazor.server.js")
                     .AddGeneratedHashValues(StaticFileExtension.JS))
+
                 .AddStyleSrc(o => o
                     .AddSelf()
                     .AddUnsafeInline()
                     .AddUnsafeHashes()
                     .AddReportSample())
+
                 .AddUpgradeInsecureRequests()
+
                 .AddWorkerSrc(o => o.AddSelf());
         })
         .AddReferrerPolicy(ReferrerPolicyDirective.NoReferrer)
         .AddPermissionsPolicy("accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()")
         .AddStrictTransportSecurity(31536000, true)
-        .AddXClientId("Material.Blazor")
+        .AddXClientId("HttpSecurity.Example")
         .AddXContentTypeOptionsNoSniff()
         .AddXFrameOptionsDirective(XFrameOptionsDirective.Deny)
         .AddXXssProtectionDirective(XXssProtectionDirective.OneModeBlock)
