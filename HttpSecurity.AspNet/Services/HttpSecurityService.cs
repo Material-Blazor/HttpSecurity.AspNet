@@ -68,7 +68,7 @@ internal sealed class HttpSecurityService : IHttpSecurityService
 
 
     /// <inheritdoc/>
-    string IHttpSecurityService.GetCSPHashesSubsting(StaticFileExtension staticFileExtension)
+    string IHttpSecurityService.GetCSPHashesSubstring(StaticFileExtension staticFileExtension)
     {
         return _fileHashDataset.GetCSPSubstring(staticFileExtension);
     }

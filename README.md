@@ -55,3 +55,5 @@ By default CompressedStaticFiles is configured to allow slightly larger files fo
 
 ## Example
 An example can be found in the [Example](https://github.com/material-blazor/HttpSecurity.AspNet/tree/main/HttpSecurity.Example) directory.
+
+If you are running with a cloned repository you can remove the comment in _host.cshtml around "link rel='stylesheet' href='https://a.com/a.css'" to cause a security violation.
