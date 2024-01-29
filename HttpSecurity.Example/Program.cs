@@ -56,7 +56,6 @@ builder.Services.AddHttpsSecurityHeaders(options =>
                 .AddScriptSrc(o => o
                     .AddSelf()
                     .AddNonce()
-                    .AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=")
                     // StrictDynamic works on Chromium browsers but fails for both Firefox and Safari
                     //.AddStrictDynamicIf(() => !builder.Environment.IsDevelopment())
                     .AddReportSample()
