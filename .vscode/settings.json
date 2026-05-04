@@ -1,0 +1,30 @@
+{
+  "extensions.experimental.affinity": {
+    "GitHub.copilot": 1,
+    "GitHub.copilot-chat": 1
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/bin": true,
+    "**/obj": true,
+    "**/.git": true,
+    "**/.artifacts": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bin": true,
+    "**/obj": true,
+    "**/.artifacts": true
+  },
+  "editor.formatOnSave": true,
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 180
+  },
+  "files.associations": {
+    "appsettings*.json": "jsonc"
+  }
+}

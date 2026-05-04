@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build HttpSecurity.Example",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["build", "--project", "${workspaceFolder}/HttpSecurity.Example/HttpSecurity.Example.csproj"],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "clear": false
+      },
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    }
+  ]
+}

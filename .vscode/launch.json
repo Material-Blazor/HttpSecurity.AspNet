@@ -1,0 +1,26 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "HttpSecurity.Example",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build HttpSecurity.Example",
+      "program": "${workspaceFolder}/.artifacts/bin/HttpSecurity.Example/debug/HttpSecurity.Example.dll",
+      "cwd": "${workspaceFolder}/HttpSecurity.Example",
+      "stopAtEntry": false,
+      "justMyCode": true,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:50083"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    }
+  ]
+}

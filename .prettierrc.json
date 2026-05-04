@@ -1,0 +1,18 @@
+{
+  "endOfLine": "lf",
+  "tabWidth": 2,
+  "useTabs": false,
+  "singleQuote": false,
+  "proseWrap": "preserve",
+  "printWidth": 240,
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "parser": "markdown",
+        "printWidth": 180,
+        "proseWrap": "always"
+      }
+    }
+  ]
+}

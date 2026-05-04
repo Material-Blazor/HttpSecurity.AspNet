@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 #if DEBUG && GENERATOR_DEBUG
 using System.Diagnostics;
 #endif
@@ -11,9 +12,9 @@ using System.Text;
 namespace HttpSecurity.AspNet;
 
 [Generator]
-internal class SourceGenerator : ISourceGenerator
+internal class SourceGenerator : IIncrementalGenerator
 {
-    public void Initialize(GeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
 #if DEBUG && GENERATOR_DEBUG
         if (!Debugger.IsAttached)
@@ -22,33 +23,31 @@ internal class SourceGenerator : ISourceGenerator
         }
 #endif
 
-        context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+        var classDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                predicate: static (node, _) => node is ClassDeclarationSyntax,
+                transform: static (ctx, _) => (ClassDeclarationSyntax)ctx.Node)
+            .Collect();
+
+        var compilationAndClasses = context.CompilationProvider.Combine(classDeclarations);
+
+        context.RegisterSourceOutput(compilationAndClasses, static (spc, source) =>
+            Execute(source.Left, source.Right, spc));
     }
 
 
-    private readonly string[] _policyOptionAdditionalAttributes = { "AddNone", "AddReportSample", "AddScript", "AddSelf", "AddStrictDynamic", "AddUnsafeEval", "AddUnsafeHashes", "AddUnsafeInline" };
+    private static readonly string[] _policyOptionAdditionalAttributes = { "AddNone", "AddReportSample", "AddScript", "AddSelf", "AddStrictDynamic", "AddUnsafeEval", "AddUnsafeHashes", "AddUnsafeInline" };
 
 
-    public void Execute(GeneratorExecutionContext context)
+    private static void Execute(Compilation compilation, ImmutableArray<ClassDeclarationSyntax> classes, SourceProductionContext context)
     {
         Extensions.LinesGenerated = 0;
-
-        // retreive the populated receiver 
-        if (context.SyntaxReceiver is not SyntaxReceiver receiver)
-        {
-            return;
-        }
-        
-        // we're going to create a new compilation that contains the attribute.
-        // TODO: we should allow source generators to provide source during initialize, so that this step isn't required.
-        //CSharpParseOptions options = (context.Compilation as CSharpCompilation).SyntaxTrees[0].Options as CSharpParseOptions;
-        Compilation compilation = context.Compilation;
 
         List<INamedTypeSymbol> policyClassSymbols = new();
         Dictionary<string, INamedTypeSymbol> policyOptionClassSymbols = new();
         INamedTypeSymbol contentSecurityPolicyOptionsClassSymbol = null;
 
-        foreach (var classNode in receiver.Classes)
+        foreach (var classNode in classes)
         {
             var modifiers = classNode.Modifiers.Select(m => m.Text).ToList();
             SemanticModel classModel = compilation.GetSemanticModel(classNode.SyntaxTree);
@@ -110,7 +109,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private StringBuilder ProcessContentSecurityPolicyOptions(INamedTypeSymbol contentSecurityPolicyOptionsClassSymbol, List<INamedTypeSymbol> policyClassSymbols, Dictionary<string, INamedTypeSymbol> policyOptionClassSymbols)
+    private static StringBuilder ProcessContentSecurityPolicyOptions(INamedTypeSymbol contentSecurityPolicyOptionsClassSymbol, List<INamedTypeSymbol> policyClassSymbols, Dictionary<string, INamedTypeSymbol> policyOptionClassSymbols)
     {
         StringBuilder sb = new();
         var isFirst = true;
@@ -174,7 +173,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessPolicyAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessPolicyAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyAttribute").FirstOrDefault();
 
@@ -219,7 +218,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"ContentSecurityPolicyOptionsAttribute").FirstOrDefault();
 
@@ -256,7 +255,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessAdditionalPolicyOptionsAttribute(INamedTypeSymbol classSymbol, string attributeName, StringBuilder sb)
+    private static bool ProcessAdditionalPolicyOptionsAttribute(INamedTypeSymbol classSymbol, string attributeName, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName(attributeName)}").FirstOrDefault();
 
@@ -298,7 +297,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessGroupNamePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessGroupNamePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddGroupName")}").FirstOrDefault();
 
@@ -338,7 +337,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessHashValuePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessHashValuePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddHashValue")}").FirstOrDefault();
 
@@ -416,7 +415,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessHostSourcePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessHostSourcePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddHostSourceValue")}").FirstOrDefault();
 
@@ -456,7 +455,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessNoncePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessNoncePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddNonce")}").FirstOrDefault();
 
@@ -496,7 +495,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessPolicyNamePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessPolicyNamePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddPolicyName")}").FirstOrDefault();
 
@@ -536,7 +535,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessSchemeSourcePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessSchemeSourcePolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddSchemeSource")}").FirstOrDefault();
 
@@ -604,7 +603,7 @@ internal class SourceGenerator : ISourceGenerator
     }
 
 
-    private bool ProcessUriPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
+    private static bool ProcessUriPolicyOptionsAttribute(INamedTypeSymbol classSymbol, StringBuilder sb)
     {
         var attribute = classSymbol.GetAttributes().Where(ad => ad.AttributeClass.Name == $"{GetLongAttributeName("AddUri")}").FirstOrDefault();
 
@@ -670,38 +669,6 @@ internal class SourceGenerator : ISourceGenerator
         return true;
     }
 
-
-    /// <summary>
-    /// Created on demand before each generation pass
-    /// </summary>
-    class SyntaxReceiver : ISyntaxReceiver
-    {
-        ///// <summary>
-        ///// Dictionary keyed by class nodes that have a ViewModelRecord attribute and with value being a list of
-        ///// properties with the ViewModelProperty attribute in that record.
-        ///// </summary>
-        //public readonly Dictionary<ClassDeclarationSyntax, List<PropertyDeclarationSyntax>> ClassNodes = new();
-
-
-        /// <summary>
-        /// List of classes with the ViewModelRecord attribute. Diagnostic reporting will be created for these classes
-        /// because the attribute is for partial records only.
-        /// </summary>
-        public readonly List<ClassDeclarationSyntax> Classes = new();
-
-
-        /// <summary>
-        /// Called for every syntax node in the compilation, we can inspect the nodes and save any information useful for generation
-        /// </summary>
-        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-        {
-            // any field with at least one attribute is a candidate for property generation
-            if (syntaxNode is ClassDeclarationSyntax classDeclarationSyntax)
-            {
-                Classes.Add(classDeclarationSyntax);
-            }
-        }
-    }
 
 
     private static string GetClassTypeName(INamedTypeSymbol classSymbol, bool suppressGeneric = false)

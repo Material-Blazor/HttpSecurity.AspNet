@@ -40,7 +40,7 @@ builder.Services.AddHttpsSecurityHeaders(options =>
                 .AddFormAction(o => o.AddNone())
 
                 .AddImgSrc(o => o
-                    .AddSelf()  
+                    .AddSelf()
                     .AddUri("www.google-analytics.com")
                     .AddUri("*.openstreetmap.org")
                     .AddSchemeSource(SchemeSource.Data, "w3.org/svg/2000"))
@@ -112,9 +112,9 @@ app.UseHttpsRedirection();
 
 app.UseHttpSecurityHeaders();
 
-app.UseStaticFiles();
-
 app.UseRouting();
+
+app.MapStaticAssets();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

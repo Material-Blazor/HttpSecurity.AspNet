@@ -8,7 +8,7 @@
       },
       "hotReloadEnabled": false,
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:50083",
+      "applicationUrl": "https://localhost:50083"
     }
   }
 }
