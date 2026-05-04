@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "EditorConfig.EditorConfig",
+    "esbenp.prettier-vscode",
+    "DavidAnson.vscode-markdownlint",
+    "bierner.markdown-mermaid",
+    "GitHub.copilot-chat",
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.vscode-dotnet-runtime"
+  ]
+}

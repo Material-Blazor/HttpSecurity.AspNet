@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="HttpSecurity.AspNet/HttpSecurity.AspNet.csproj" />
+  <Project Path="HttpSecurity.Example/HttpSecurity.Example.csproj" />
+  <Project Path="SourceGenerator/SourceGenerator.csproj" />
+</Solution>

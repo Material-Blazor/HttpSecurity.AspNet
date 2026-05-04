@@ -39,4 +39,16 @@ public enum SchemeSource
     /// mediastream: source.
     /// </summary>
     Mediastream,
+
+
+    /// <summary>
+    /// ws: source (unencrypted WebSocket).
+    /// </summary>
+    Ws,
+
+
+    /// <summary>
+    /// wss: source (encrypted WebSocket).
+    /// </summary>
+    Wss,
 }

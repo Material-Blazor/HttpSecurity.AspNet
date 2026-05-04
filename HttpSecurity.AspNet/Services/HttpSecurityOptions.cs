@@ -50,11 +50,11 @@ public sealed class HttpSecurityOptions
     public HttpSecurityOptions AddContentSecurityOptions(Action<ContentSecurityPolicyOptions> configureOptions)
     {
         ContentSecurityPolicyOptions options = new();
-        
+
         configureOptions(options);
 
         HeaderBuilders.Add(new(
-            "Content-Security-Policy", 
+            "Content-Security-Policy",
             (IHttpSecurityService httpSecurityService, string nonceValue, string baseUri, string baseDomain) => string.Join(' ', options.Policies.Select(x => x.GetPolicyValue(httpSecurityService, nonceValue, baseUri, baseDomain)).OrderBy(x => x))));
 
         return this;
@@ -121,12 +121,108 @@ public sealed class HttpSecurityOptions
 
 
     /// <summary>
-    /// Adds an Strict-Transport-Security directive with the value supplied.
+    /// Adds a Strict-Transport-Security header.
     /// </summary>
+    /// <param name="maxAgeExpireTime">The max-age value in seconds.</param>
+    /// <param name="includeSubDomains">Whether to include the includeSubDomains directive.</param>
+    /// <param name="preload">Whether to include the preload directive. Only set this if you intend to submit the domain to the HSTS preload list at https://hstspreload.org.</param>
     /// <returns></returns>
-    public HttpSecurityOptions AddStrictTransportSecurity(ulong maxAgeExpireTime, bool includeSubDomains = false)
+    public HttpSecurityOptions AddStrictTransportSecurity(ulong maxAgeExpireTime, bool includeSubDomains = false, bool preload = false)
     {
-        HeaderBuilders.Add(new("Strict-Transport-Security", (_, _, _, _) => $"max-age={maxAgeExpireTime}{(includeSubDomains ? " includeSubDomains" : "")}"));
+        HeaderBuilders.Add(new("Strict-Transport-Security", (_, _, _, _) =>
+            $"max-age={maxAgeExpireTime}{(includeSubDomains ? "; includeSubDomains" : "")}{(preload ? "; preload" : "")}"));
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds a Content-Security-Policy-Report-Only header. Use this to test a new policy without enforcing it.
+    /// </summary>
+    /// <param name="configureOptions">Configures the content security policy.</param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddContentSecurityPolicyReportOnly(Action<ContentSecurityPolicyOptions> configureOptions)
+    {
+        ContentSecurityPolicyOptions options = new();
+
+        configureOptions(options);
+
+        HeaderBuilders.Add(new(
+            "Content-Security-Policy-Report-Only",
+            (IHttpSecurityService httpSecurityService, string nonceValue, string baseUri, string baseDomain) => string.Join(' ', options.Policies.Select(x => x.GetPolicyValue(httpSecurityService, nonceValue, baseUri, baseDomain)).OrderBy(x => x))));
+
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds a Cross-Origin-Embedder-Policy header.
+    /// </summary>
+    /// <param name="directive">The COEP directive value.</param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddCrossOriginEmbedderPolicy(CrossOriginEmbedderPolicyDirective directive)
+    {
+        var value = directive switch
+        {
+            CrossOriginEmbedderPolicyDirective.UnsafeNone => "unsafe-none",
+            CrossOriginEmbedderPolicyDirective.RequireCorp => "require-corp",
+            CrossOriginEmbedderPolicyDirective.Credentialless => "credentialless",
+            _ => throw new NotImplementedException(),
+        };
+
+        HeaderBuilders.Add(new("Cross-Origin-Embedder-Policy", (_, _, _, _) => value));
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds a Cross-Origin-Opener-Policy header.
+    /// </summary>
+    /// <param name="directive">The COOP directive value.</param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddCrossOriginOpenerPolicy(CrossOriginOpenerPolicyDirective directive)
+    {
+        var value = directive switch
+        {
+            CrossOriginOpenerPolicyDirective.UnsafeNone => "unsafe-none",
+            CrossOriginOpenerPolicyDirective.SameOriginAllowPopups => "same-origin-allow-popups",
+            CrossOriginOpenerPolicyDirective.SameOrigin => "same-origin",
+            _ => throw new NotImplementedException(),
+        };
+
+        HeaderBuilders.Add(new("Cross-Origin-Opener-Policy", (_, _, _, _) => value));
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds a Cross-Origin-Resource-Policy header.
+    /// </summary>
+    /// <param name="directive">The CORP directive value.</param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddCrossOriginResourcePolicy(CrossOriginResourcePolicyDirective directive)
+    {
+        var value = directive switch
+        {
+            CrossOriginResourcePolicyDirective.SameSite => "same-site",
+            CrossOriginResourcePolicyDirective.SameOrigin => "same-origin",
+            CrossOriginResourcePolicyDirective.CrossOrigin => "cross-origin",
+            _ => throw new NotImplementedException(),
+        };
+
+        HeaderBuilders.Add(new("Cross-Origin-Resource-Policy", (_, _, _, _) => value));
+        return this;
+    }
+
+
+    /// <summary>
+    /// Adds a Reporting-Endpoints header, required for the <c>report-to</c> CSP directive to function.
+    /// </summary>
+    /// <param name="endpoints">One or more named endpoint definitions, e.g. <c>("csp-endpoint", "https://example.com/csp-reports")</c>.</param>
+    /// <returns></returns>
+    public HttpSecurityOptions AddReportingEndpoints(params (string name, string url)[] endpoints)
+    {
+        var value = string.Join(", ", endpoints.Select(e => $"{e.name}=\"{e.url}\""));
+        HeaderBuilders.Add(new("Reporting-Endpoints", (_, _, _, _) => value));
         return this;
     }
 
