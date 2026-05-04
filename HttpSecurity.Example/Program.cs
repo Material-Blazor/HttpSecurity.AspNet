@@ -16,8 +16,6 @@ builder.Services.AddHttpsSecurityHeaders(options =>
             cspOptions
                 .AddBaseUri(o => o.AddSelf())
 
-                .AddBlockAllMixedContent()
-
                 .AddChildSrc(o => o.AddSelf())
 
                 .AddConnectSrc(o => o
@@ -54,34 +52,36 @@ builder.Services.AddHttpsSecurityHeaders(options =>
                 .AddReportUri(o => o.AddUri((baseUri, baseDomain) => $"https://{baseUri}/api/CspReporting/UriReport"))
 
                 .AddScriptSrc(o => o
-                    .AddSelf()
                     .AddNonce()
                     .AddHashValue(HashAlgorithm.SHA256, "v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=")
-                    // StrictDynamic works on Chromium browsers but fails for both Firefox and Safari
-                    //.AddStrictDynamicIf(() => !builder.Environment.IsDevelopment())
+                    .AddStrictDynamic()
                     .AddReportSample()
                     .AddUri("https://www.googletagmanager.com/gtag/js")
                     .AddUri((baseUri, baseDomain) => $"https://{baseUri}/_framework/aspnetcore-browser-refresh.js")
                     .AddUri((baseUri, baseDomain) => $"https://{baseUri}/_framework/blazor.server.js")
                     .AddGeneratedHashValues(StaticFileExtension.JS))
 
+                .AddScriptSrcAttr(o => o.AddNone())
+
                 .AddStyleSrc(o => o
                     .AddSelf()
                     .AddUnsafeInline()
-                    .AddUnsafeHashes()
                     .AddReportSample())
 
                 .AddUpgradeInsecureRequests()
 
                 .AddWorkerSrc(o => o.AddSelf());
         })
+        .AddCrossOriginOpenerPolicy(CrossOriginOpenerPolicyDirective.SameOrigin)
+        .AddCrossOriginEmbedderPolicy(CrossOriginEmbedderPolicyDirective.RequireCorp)
+        .AddCrossOriginResourcePolicy(CrossOriginResourcePolicyDirective.SameOrigin)
         .AddReferrerPolicy(ReferrerPolicyDirective.NoReferrer)
         .AddPermissionsPolicy("accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()")
         .AddStrictTransportSecurity(31536000, true)
         .AddXClientId("HttpSecurity.Example")
         .AddXContentTypeOptionsNoSniff()
         .AddXFrameOptionsDirective(XFrameOptionsDirective.Deny)
-        .AddXXssProtectionDirective(XXssProtectionDirective.OneModeBlock)
+        .AddXXssProtectionDirective(XXssProtectionDirective.Zero)
         .AddXPermittedCrossDomainPoliciesDirective(XPermittedCrossDomainPoliciesDirective.None);
 },
 onStartingOptions =>
